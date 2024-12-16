@@ -44,12 +44,12 @@ public class HomePage {
         returnLabels.first().click();
     }
 
-    @Step("Enter from: {from}")
+    @Step("Fill From with value: {from}")
     public void fillFrom(String from) {
         fromInputs.first().val(from);
     }
 
-    @Step("Enter to: {to}")
+    @Step("Fill From with value: {to}")
     public void fillTo(String to) {
         toInputs.first().val(to);
     }
