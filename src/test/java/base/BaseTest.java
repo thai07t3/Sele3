@@ -21,7 +21,7 @@ public class BaseTest {
     @Parameters("browser")
     @BeforeMethod
     public void setUp() {
-        String browser = System.getProperty("browser", "chrome"); // Default to chrome if no parameter is passed
+        String browser = System.getProperty("browser");
         ConfigReader configReader = new ConfigReader(Constants.CONFIG_FILE_PATH);
         String prefix = browser + ".";
 
