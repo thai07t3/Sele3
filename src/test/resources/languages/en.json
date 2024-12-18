@@ -1,0 +1,12 @@
+{
+  "locator": {
+    "acceptButton": "//div[@id='popup-dialog-description']//following-sibling::div/button",
+    "iframe": "#preview-notification-frame",
+    "returnRadios": "//div[@role='radiogroup']//input[@value='roundTrip']",
+    "onewayRadios": "//div[@role='radiogroup']//input[@value='oneway']",
+    "fromInputs": "//label[contains(text(),'From')]/following-sibling::div//input",
+    "toInputs": "//input[@id='arrivalPlaceDesktop']"
+  },
+  "content": {
+  }
+}

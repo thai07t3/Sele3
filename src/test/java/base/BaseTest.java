@@ -10,8 +10,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import utils.ConfigReader;
 import utils.Constants;
+import utils.Localization;
 
 public class BaseTest {
+    protected Localization localization;
 
     @BeforeClass
     public void beforeClass() {
@@ -24,6 +26,7 @@ public class BaseTest {
     @Parameters("browser")
     @BeforeMethod
     public void setUp() {
+        //Set up the browser
         String browser = System.getProperty("browser");
         ConfigReader configReader = new ConfigReader(Constants.CONFIG_FILE_PATH);
         String prefix = browser + ".";
@@ -36,6 +39,11 @@ public class BaseTest {
         if (gridUrl != null && !gridUrl.isEmpty()) {
             Configuration.remote = gridUrl;
         }
+
+        // Set up the language
+        String language = System.getProperty("language");
+        localization = new Localization(language);
+        BasePage.setLocalization(localization);
     }
 
     @AfterMethod

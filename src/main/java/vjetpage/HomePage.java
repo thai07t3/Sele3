@@ -1,5 +1,6 @@
-package vjet;
+package vjetpage;
 
+import base.BasePage;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
@@ -7,14 +8,14 @@ import io.qameta.allure.Step;
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 
-public class HomePage {
+public class HomePage extends BasePage {
 
-    private final SelenideElement acceptButton = $x("//div[@id='popup-dialog-description']//following-sibling::div/button");
-    private final SelenideElement iframe = $(byId("preview-notification-frame"));
-    private final ElementsCollection returnLabels = $$x("//div[@role='radiogroup']//input[@value='roundTrip']");
-    private final ElementsCollection onewayLabels = $$x("//div[@role='radiogroup']//input[@value='oneway']");
-    private final ElementsCollection fromInputs = $$x("//label[contains(text(),'From')]/following-sibling::div//input");
-    private final ElementsCollection toInputs = $$x("//input[@id='arrivalPlaceDesktop']");
+    private final SelenideElement acceptButton = $x(localization.getLocator("acceptButton"));
+    private final SelenideElement iframe = $(localization.getLocator("iframe"));
+    private final ElementsCollection returnRadios = $$x(localization.getLocator("returnRadios"));
+    private final ElementsCollection onewayRadios = $$x(localization.getLocator("onewayRadios"));
+    private final ElementsCollection fromInputs = $$x(localization.getLocator("fromInputs"));
+    private final ElementsCollection toInputs = $$x(localization.getLocator("toInputs"));
 
 
     @Step("Accept cookies if present")
@@ -35,12 +36,12 @@ public class HomePage {
 
     @Step("Select one way")
     public void selectOneWay() {
-        onewayLabels.first().click();
+        onewayRadios.first().click();
     }
 
     @Step("Select return")
     public void selectReturn() {
-        returnLabels.first().click();
+        returnRadios.first().click();
     }
 
     @Step("Fill From with value: {from}")

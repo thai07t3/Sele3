@@ -1,8 +1,9 @@
-package vjet;
+package vjet_tests;
 
 import base.BaseTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import vjetpage.HomePage;
 
 import static com.codeborne.selenide.Selenide.open;
 
