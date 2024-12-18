@@ -9,8 +9,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <aspectj.version>1.9.22.1</aspectj.version>
         <suiteXmlFile>src/test/resources/test.xml</suiteXmlFile>
         <browser>chrome</browser>
@@ -20,23 +20,17 @@
     </properties>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.codeborne/selenide -->
         <dependency>
             <groupId>com.codeborne</groupId>
             <artifactId>selenide</artifactId>
-            <version>5.25.0</version>
+            <version>7.6.1</version> <!-- Latest -->
         </dependency>
 
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>7.7.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>5.9.2</version>
-            <scope>test</scope>
+            <version>7.10.2</version>
         </dependency>
 
         <!-- httpclient5 is used for ConnectionConfig-->
@@ -51,14 +45,14 @@
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-selenide</artifactId>
-            <version>2.20.1</version>
+            <version>2.29.1</version> <!-- Latest -->
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-testng -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-testng</artifactId>
-            <version>2.20.1</version>
+            <version>2.29.1</version> <!-- Latest -->
         </dependency>
 
     </dependencies>
@@ -68,11 +62,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
+                <version>3.13.0</version>
             </plugin>
             <!---Allure-->
             <plugin>
@@ -101,7 +91,6 @@
                     </systemProperties>
                     <systemPropertyVariables>
                         <!--                        <selenide.headless>false</selenide.headless>-->
-                        <!--suppress UnresolvedMavenProperty -->
                         <browser>${browser}</browser>
                         <parallel>${parallel}</parallel>
                         <threadCount>${threadCount}</threadCount>
@@ -118,7 +107,7 @@
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
-                <version>2.14.0</version>
+                <version>2.15.2</version> <!-- Latest -->
                 <configuration>
                     <reportVersion>2.32.0</reportVersion>
                 </configuration>

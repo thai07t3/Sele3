@@ -15,7 +15,10 @@ public class BaseTest {
 
     @BeforeClass
     public void beforeClass() {
-        SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
+        SelenideLogger.addListener("AllureSelenide",
+                new AllureSelenide()
+                        .includeSelenideSteps(false)
+                        .screenshots(true));
     }
 
     @Parameters("browser")
@@ -26,7 +29,7 @@ public class BaseTest {
         String prefix = browser + ".";
 
         Configuration.browser = configReader.getString(prefix + "browser");
-        Configuration.startMaximized = configReader.getBoolean(prefix + "isMaximized");
+//        Configuration.startMaximized = configReader.getBoolean(prefix + "isMaximized");
         Configuration.headless = configReader.getBoolean(prefix + "headless");
 
         String gridUrl = configReader.getString(prefix + "gridUrl");

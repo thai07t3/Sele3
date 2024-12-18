@@ -1,7 +1,6 @@
 package vjet;
 
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
@@ -28,9 +27,9 @@ public class HomePage {
     @Step("Click on later button if present in iframe")
     public void clickLaterButtonIfDisplay() {
         if (iframe.exists()) {
-            Selenide.switchTo().frame(iframe);
+            switchTo().frame(iframe);
             $(byId("NC_CTA_TWO")).click();
-            Selenide.switchTo().defaultContent();
+            switchTo().defaultContent();
         }
     }
 
