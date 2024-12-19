@@ -13,7 +13,7 @@ public class VietJetTest extends BaseTest {
 
     @BeforeMethod
     public void setUp() {
-        open(Constants.URL);
+        open(Constants.URL + language);
         homePage.acceptCookiesIfDisplay();
         homePage.clickLaterButtonIfDisplay();
     }
@@ -22,6 +22,8 @@ public class VietJetTest extends BaseTest {
     public void testSearch() {
         homePage.selectReturn();
         homePage.fillFrom("Ho Chi Minh");
+//        homePage.clickDepartureDateButton();
         homePage.fillTo("Ha Noi");
+//        homePage.clickReturnDateButton();
     }
 }

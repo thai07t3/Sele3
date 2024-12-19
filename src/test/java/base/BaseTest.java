@@ -4,6 +4,7 @@ import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.selenide.AllureSelenide;
+import io.qameta.allure.selenide.LogType;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -12,7 +13,10 @@ import utils.ConfigReader;
 import utils.Constants;
 import utils.Localization;
 
+import static com.codeborne.selenide.Selenide.open;
+
 public class BaseTest {
+    public static String language;
 
     static {
         setBrowserConfig(); // Set up the browser
@@ -24,7 +28,8 @@ public class BaseTest {
         SelenideLogger.addListener("AllureSelenide",
                 new AllureSelenide()
                         .includeSelenideSteps(true)
-                        .screenshots(true));
+                        .screenshots(true)
+                        .enableLogs(LogType.BROWSER, java.util.logging.Level.INFO));
     }
 
     @AfterMethod(alwaysRun = true)
@@ -41,7 +46,6 @@ public class BaseTest {
         Configuration.browser = configReader.getString(prefix + "browser");
 //        Configuration.startMaximized = configReader.getBoolean(prefix + "isMaximized");
         Configuration.headless = configReader.getBoolean(prefix + "headless");
-//        Configuration.baseUrl = Constants.URL;
 
         String gridUrl = configReader.getString(prefix + "gridUrl");
         if (gridUrl != null && !gridUrl.isEmpty()) {
@@ -51,8 +55,7 @@ public class BaseTest {
 
     @Parameters("language")
     protected static void setLanguage() {
-        String language = System.getProperty("language");
+        language = System.getProperty("language");
         BasePage.setLocalization(new Localization(language));
     }
-
 }

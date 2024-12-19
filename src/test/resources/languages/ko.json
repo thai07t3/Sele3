@@ -1,0 +1,9 @@
+{
+  "locator": {
+  },
+  "content": {
+    "from": "출발지",
+    "departureDate": "가는날",
+    "returnDate": "오는날"
+  }
+}
