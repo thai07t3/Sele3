@@ -13,20 +13,27 @@ import utils.Constants;
 import utils.Localization;
 
 public class BaseTest {
-    protected Localization localization;
+
+    static {
+        setBrowserConfig(); // Set up the browser
+        setLanguage(); // Set up the language
+    }
 
     @BeforeClass
     public void beforeClass() {
         SelenideLogger.addListener("AllureSelenide",
                 new AllureSelenide()
-                        .includeSelenideSteps(false)
+                        .includeSelenideSteps(true)
                         .screenshots(true));
     }
 
+    @AfterMethod(alwaysRun = true)
+    public void tearDown() {
+        Selenide.closeWebDriver();
+    }
+
     @Parameters("browser")
-    @BeforeMethod
-    public void setUp() {
-        //Set up the browser
+    protected static void setBrowserConfig() {
         String browser = System.getProperty("browser");
         ConfigReader configReader = new ConfigReader(Constants.CONFIG_FILE_PATH);
         String prefix = browser + ".";
@@ -34,20 +41,18 @@ public class BaseTest {
         Configuration.browser = configReader.getString(prefix + "browser");
 //        Configuration.startMaximized = configReader.getBoolean(prefix + "isMaximized");
         Configuration.headless = configReader.getBoolean(prefix + "headless");
+//        Configuration.baseUrl = Constants.URL;
 
         String gridUrl = configReader.getString(prefix + "gridUrl");
         if (gridUrl != null && !gridUrl.isEmpty()) {
             Configuration.remote = gridUrl;
         }
+    }
 
-        // Set up the language
+    @Parameters("language")
+    protected static void setLanguage() {
         String language = System.getProperty("language");
-        localization = new Localization(language);
-        BasePage.setLocalization(localization);
+        BasePage.setLocalization(new Localization(language));
     }
 
-    @AfterMethod
-    public void tearDown() {
-        Selenide.closeWebDriver();
-    }
 }

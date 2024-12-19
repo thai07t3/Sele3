@@ -5,13 +5,14 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 
 public class HomePage extends BasePage {
 
     private final SelenideElement acceptButton = $x(localization.getLocator("acceptButton"));
-    private final SelenideElement iframe = $(localization.getLocator("iframe"));
+    private final SelenideElement iframe = $(byId(localization.getLocator("iframe")));
     private final ElementsCollection returnRadios = $$x(localization.getLocator("returnRadios"));
     private final ElementsCollection onewayRadios = $$x(localization.getLocator("onewayRadios"));
     private final ElementsCollection fromInputs = $$x(localization.getLocator("fromInputs"));
@@ -41,7 +42,8 @@ public class HomePage extends BasePage {
 
     @Step("Select return")
     public void selectReturn() {
-        returnRadios.first().click();
+        System.out.println("returnRadios.size() = " + returnRadios.size());
+        returnRadios.first().shouldBe(visible).click();
     }
 
     @Step("Fill From with value: {from}")

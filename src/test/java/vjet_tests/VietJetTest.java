@@ -3,6 +3,7 @@ package vjet_tests;
 import base.BaseTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import utils.Constants;
 import vjetpage.HomePage;
 
 import static com.codeborne.selenide.Selenide.open;
@@ -12,7 +13,7 @@ public class VietJetTest extends BaseTest {
 
     @BeforeMethod
     public void setUp() {
-        open("https://www.vietjetair.com/en/");
+        open(Constants.URL);
         homePage.acceptCookiesIfDisplay();
         homePage.clickLaterButtonIfDisplay();
     }
