@@ -9,8 +9,6 @@ import java.util.*;
 
 public class DateUtils {
 
-
-
     public static String formatLocalDateTime(LocalDateTime localDate, String format, boolean lowercasePeriod) {
         String result = localDate.format(DateTimeFormatter.ofPattern(format));
         if (lowercasePeriod) {
@@ -93,12 +91,12 @@ public class DateUtils {
         return diffInHour;
     }
 
-    public static void plusDays(int numberOfDays) {
-        SystemDateTime.instance().plusDays(numberOfDays);
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public static void plusDays(int numberOfDays) {
+//        SystemDateTime.instance().plusDays(numberOfDays);
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }

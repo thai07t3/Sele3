@@ -22,8 +22,10 @@ public class VietJetTest extends BaseTest {
     public void testSearch() {
         homePage.selectReturn();
         homePage.fillFrom("Ho Chi Minh");
-//        homePage.clickDepartureDateButton();
+        homePage.clickDepartureDateButton();
+        homePage.selectDateFromNow(1);
         homePage.fillTo("Ha Noi");
-//        homePage.clickReturnDateButton();
+        homePage.clickReturnDateButton();
+        homePage.selectDateFromNow(4);
     }
 }
