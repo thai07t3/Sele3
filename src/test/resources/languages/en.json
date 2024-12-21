@@ -2,8 +2,13 @@
   "locator": {
   },
   "content": {
+    "oneway": "One-way",
+    "return": "Return",
     "from": "From",
     "departureDate": "Departure date",
-    "returnDate": "Return Date"
+    "returnDate": "Return Date",
+    "adult": "Adults",
+    "children":"Childrens",
+    "infant": "Infants"
   }
 }

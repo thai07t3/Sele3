@@ -2,8 +2,13 @@
   "locator": {
   },
   "content": {
+    "oneway": "편도",
+    "return": "왕복",
     "from": "출발지",
     "departureDate": "가는날",
-    "returnDate": "오는날"
+    "returnDate": "오는날",
+    "adult": "성인",
+    "children":"소아",
+    "infant": "유아"
   }
 }

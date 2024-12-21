@@ -2,8 +2,13 @@
   "locator": {
   },
   "content": {
+    "oneway": "Một chiều",
+    "return": "Khứ hồi",
     "from": "Điểm khởi hành",
     "departureDate": "Ngày đi",
-    "returnDate": "Ngày về"
+    "returnDate": "Ngày về",
+    "adult": "Người lớn",
+    "children":"Trẻ em",
+    "infant": "Em bé"
   }
 }

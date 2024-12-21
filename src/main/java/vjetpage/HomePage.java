@@ -1,33 +1,41 @@
 package vjetpage;
 
 import base.BasePage;
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
-import enums.Languages;
+import enums.AdjustType;
+import enums.AgeType;
+import enums.FlyType;
 import io.qameta.allure.Step;
+import models.Ticket;
+import utils.Constants;
+import utils.DateUtils;
 
-import java.time.LocalDateTime;
-import java.time.format.TextStyle;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 
 public class HomePage extends BasePage {
 
-    private final SelenideElement acceptButton = $x("//div[@id='popup-dialog-description']//following-sibling::div/button");
+    private final SelenideElement acceptButton = $x(
+            "//div[@id='popup-dialog-description']//following-sibling::div/button"
+    );
     private final SelenideElement iframe = $(byId("preview-notification-frame"));
-    private final SelenideElement returnRadio = $x("//div[@role='radiogroup']//input[@value='roundTrip']");
-    private final SelenideElement onewayRadio = $x("//div[@role='radiogroup']//input[@value='oneway']");
     private final SelenideElement fromInput = $x(
             "//label[contains(text(),'"
                     + localization.getContent("from")
                     + "')]/following-sibling::div//input");
     private final SelenideElement toInput = $x("//input[@id='arrivalPlaceDesktop']");
-    private final SelenideElement departureDateButton = $x("//p[text()='" + localization.getContent("departureDate") + "']");
-    private final SelenideElement returnDateButton = $x("//p[text()='" + localization.getContent("returnDate") + "']");
-    private final String dynamicDateLocator = "//div[text()='%s']/following-sibling::div[@class='rdrDays']//button[not(contains(@class, 'rdrDayDisabled'))]//span[text()='%d']";
-//    private final SelenideElement currentDay = $x("//button[@class='rdrDay rdrDayToday']");
-//    private final SelenideElement currentMonth = $x("//div[button[@class='rdrDay rdrDayToday']]/preceding-sibling::div[@class='rdrMonthName']");
+    private final SelenideElement departureDateButton = $x(
+            "//p[text()='" + localization.getContent("departureDate") + "']");
+    private final SelenideElement returnDateButton = $x(
+            "//p[text()='" + localization.getContent("returnDate") + "']");
+    private final String dynamicDateLocator = "//div[text()='%s']/following-sibling::div[@class='rdrDays']//" +
+            "button[not(contains(@class, 'rdrDayDisabled'))]//span[text()='%d']";
+    private final String quantityAdjustment = "//div[div[p[text()='%s']]]/following-sibling::div//button[%d]";
+    private final String currentNumber = "//div[div[p[text()='%s']]]/following-sibling::div//span[@weight='Bold']";
 
 
     @Step("Accept cookies if present")
@@ -46,14 +54,9 @@ public class HomePage extends BasePage {
         }
     }
 
-    @Step("Select one way")
-    public void selectOneWay() {
-        onewayRadio.click();
-    }
-
-    @Step("Select return")
-    public void selectReturn() {
-        returnRadio.click();
+    @Step("Select round trip: {flyType}")
+    public void selectFlyType(FlyType flyType) {
+        $x(String.format("//span[text()='%s']", flyType.getValue())).click();
     }
 
     @Step("Fill From with value: {from}")
@@ -76,33 +79,70 @@ public class HomePage extends BasePage {
         returnDateButton.click();
     }
 
-    @Step("Select date from now")
-    public void selectDateFromNow(int plusDays) {
-        LocalDateTime lc = LocalDateTime.now().plusDays(plusDays);
 
-        // Lấy định dạng tháng và năm theo locale
-        String monthAndYear;
-        if (localization.getLocale().equals(Languages.VIETNAMESE.getValue())) {
-            // Tiếng Việt: "tháng 12 2024"
-            monthAndYear = String.format("tháng %d %d", lc.getMonthValue(), lc.getYear());
-        } else if (localization.getLocale().equals(Languages.KOREAN.getValue())) {
-            // Tiếng Hàn: "12월 2024"
-            monthAndYear = String.format("%d월 %d", lc.getMonthValue(), lc.getYear());
-        } else {
-            // Mặc định: Tên tháng đầy đủ và năm (ví dụ: "December 2024")
-            monthAndYear = lc.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " + lc.getYear();
+    @Step("Select date: {plusDays} days from now")
+    public void selectDate(int plusDays) {
+        LocalDate targetDate = LocalDate.now().plusDays(plusDays);
+        $x(String.format(
+                dynamicDateLocator,
+                DateUtils.getMonthAndYear(targetDate),
+                targetDate.getDayOfMonth())
+        ).click();
+    }
+
+    @Step("Select date: {date}")
+    public void selectDate(LocalDate date) {
+        $x(String.format(
+                dynamicDateLocator,
+                DateUtils.getMonthAndYear(date),
+                date.getDayOfMonth())
+        ).click();
+    }
+
+    @Step("Select date: {date} that is next friday")
+    public void selectNextFriday(LocalDate date) {
+        int daysUntilFriday = 5 - date.getDayOfWeek().getValue();
+        if (daysUntilFriday < 0) {
+            daysUntilFriday += 7;
         }
-        System.out.println(monthAndYear);
+        LocalDate nextFriday = date.plusDays(daysUntilFriday);
+        $x(String.format(
+                dynamicDateLocator,
+                DateUtils.getMonthAndYear(nextFriday),
+                nextFriday.getDayOfMonth())
+        ).click();
+    }
 
-        // Dynamic locator với định dạng chính xác
-//        String dynamicDateLocator = "//div[text()='%s']/following-sibling::div[@class='rdrDays']//button[not(contains(@class, 'rdrDayDisabled'))]//span[text()='%d']";
+    @Step("Adjust quantity of {type} to {quantity}")
+    public void adjustQuantity(AgeType type, int expectedNumber) {
+        int currentQuantity = Integer.parseInt($x(String.format(currentNumber, type.getValue())).getText());
+        AdjustType adjustType = currentQuantity < expectedNumber ? AdjustType.INCREASE : AdjustType.DECREASE;
+        while (currentQuantity < expectedNumber) {
+            $x(String.format(quantityAdjustment, type.getValue(), adjustType.getValue())).click();
+            currentQuantity = Integer.parseInt($x(String.format(currentNumber, type.getValue())).getText());
+            if (currentQuantity == Constants.MAX_QUANTITY) break; // prevent infinite loop
+        }
+    }
 
-//        // In thông tin để debug
-//        System.out.println(monthAndYear);
-//        System.out.println(lc.getDayOfMonth());
-//        System.out.printf((dynamicDateLocator) + "%n", monthAndYear, lc.getDayOfMonth());
+    private int getQuantity(AgeType type) {
+        return Integer.parseInt($x(String.format(currentNumber, type.getValue())).getText());
+    }
 
-        // Sử dụng Selenide để click vào element
-        $x(String.format(dynamicDateLocator, monthAndYear, lc.getDayOfMonth())).click();
+    @Step("Should ticket selection form be displayed")
+    public void shouldTicketSelectionFormBeDisplayed(Ticket ticket) {
+        fromInput.shouldBe(Condition.exactValue(ticket.getFrom()));
+        toInput.shouldBe(Condition.exactValue(ticket.getTo()));
+        departureDateButton.sibling(0).shouldHave(Condition.text(
+                ticket.getDepartureDate()
+                        .format(DateTimeFormatter
+                                .ofPattern(Constants.DATE_FORMAT))
+        ));
+        returnDateButton.sibling(0).shouldBe(Condition.text(
+                ticket.getReturnDate()
+                        .format(DateTimeFormatter
+                                .ofPattern(Constants.DATE_FORMAT))
+        ));
+        $x(String.format(currentNumber, AgeType.ADULT.getValue())).shouldHave(Condition.text(
+                String.valueOf(ticket.getNumberOfAdult())));
     }
 }
