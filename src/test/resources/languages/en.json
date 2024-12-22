@@ -9,6 +9,7 @@
     "returnDate": "Return Date",
     "adult": "Adults",
     "children":"Childrens",
-    "infant": "Infants"
+    "infant": "Infants",
+    "sold.out": "Sold out"
   }
 }

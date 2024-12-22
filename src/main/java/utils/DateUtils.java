@@ -12,10 +12,10 @@ public class DateUtils {
 
     public static String getMonthAndYear(LocalDate date) {
         String monthAndYear;
-        if (localization.getLocale().equals(Languages.VIETNAMESE.getValue())) {
+        if (localization.getLocale().equals(Languages.VIETNAMESE.getCode())) {
             // Vietnamese: "tháng 12 2024"
             monthAndYear = String.format("tháng %d %d", date.getMonthValue(), date.getYear());
-        } else if (localization.getLocale().equals(Languages.KOREAN.getValue())) {
+        } else if (localization.getLocale().equals(Languages.KOREAN.getCode())) {
             // Korean: "12월 2024"
             monthAndYear = String.format("%d월 %d", date.getMonthValue(), date.getYear());
         } else {

@@ -2,7 +2,8 @@
 <suite name="Parallel Test Suite" parallel="classes" thread-count="1">
     <test name="Test Execution">
         <classes>
-            <class name="vjet_tests.VietJetTest"/>
+            <class name="tests.google.PassTest"/>
+            <class name="tests.google.FailedTest"/>
         </classes>
     </test>
 </suite>

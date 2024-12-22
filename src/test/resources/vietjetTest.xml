@@ -2,8 +2,7 @@
 <suite name="Parallel Test Suite" parallel="classes" thread-count="1">
     <test name="Test Execution">
         <classes>
-            <class name="tests.PassTest"/>
-            <class name="tests.FailedTest"/>
+            <class name="tests.vietjet.VietJetTest"/>
         </classes>
     </test>
 </suite>

@@ -8,9 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public enum Languages {
-    ENGLISH("en"),
-    VIETNAMESE("vi"),
-    KOREAN("ko");
+    ENGLISH("en", "English"),
+    VIETNAMESE("vi", "Vietnamese"),
+    KOREAN("ko", "Korean");
 
-    private String value;
+    private String code;
+    private String name;
 }

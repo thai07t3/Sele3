@@ -1,4 +1,4 @@
-package vjetpage;
+package pages.vietjet;
 
 import base.BasePage;
 import com.codeborne.selenide.Condition;
@@ -32,6 +32,7 @@ public class HomePage extends BasePage {
             "//p[text()='" + localization.getContent("departureDate") + "']");
     private final SelenideElement returnDateButton = $x(
             "//p[text()='" + localization.getContent("returnDate") + "']");
+    private final SelenideElement baseCustomSelect = $("[id^='input-base-custom']");
     private final String dynamicDateLocator = "//div[text()='%s']/following-sibling::div[@class='rdrDays']//" +
             "button[not(contains(@class, 'rdrDayDisabled'))]//span[text()='%d']";
     private final String quantityAdjustment = "//div[div[p[text()='%s']]]/following-sibling::div//button[%d]";
@@ -59,14 +60,29 @@ public class HomePage extends BasePage {
         $x(String.format("//span[text()='%s']", flyType.getValue())).click();
     }
 
+    @Step
+    public void closePassengerForm() {
+        baseCustomSelect.click();
+    }
+
+    @Step("Click on: {text}")
+    public void clickOn(String text) {
+        $$x(String.format("//span[text()=\"%s\"]", text)).get(1).click();
+    }
+
     @Step("Fill From with value: {from}")
     public void fillFrom(String from) {
         fromInput.val(from);
+        fromInput.click();
+        String locator = "//div[.='%s']";
+        $x(String.format(locator, from)).click();
     }
 
     @Step("Fill From with value: {to}")
     public void fillTo(String to) {
         toInput.val(to);
+        String locator = "//div[.='%s']";
+        $x(String.format(locator, to)).click();
     }
 
     @Step("Click on Departure Date button")
@@ -130,8 +146,8 @@ public class HomePage extends BasePage {
 
     @Step("Should ticket selection form be displayed")
     public void shouldTicketSelectionFormBeDisplayed(Ticket ticket) {
-        fromInput.shouldBe(Condition.exactValue(ticket.getFrom()));
-        toInput.shouldBe(Condition.exactValue(ticket.getTo()));
+        fromInput.shouldBe(Condition.have(Condition.text(ticket.getFrom())));
+        toInput.shouldBe(Condition.have(Condition.text(ticket.getTo())));
         departureDateButton.sibling(0).shouldHave(Condition.text(
                 ticket.getDepartureDate()
                         .format(DateTimeFormatter
