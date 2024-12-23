@@ -10,6 +10,7 @@
     "adult": "Adults",
     "children":"Childrens",
     "infant": "Infants",
-    "sold.out": "Sold out"
+    "sold.out": "Sold out",
+    "time.to.time": " To "
   }
 }

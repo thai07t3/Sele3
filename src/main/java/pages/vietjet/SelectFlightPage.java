@@ -12,45 +12,44 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 
 public class SelectFlightPage extends BasePage {
-    private final SelenideElement cancelButton = $("span.evenodd svg path[clip-rule='evenodd']");
-//    private final SelenideElement allPrices = $x("//div[p[contains(.,'000 VND')]/preceding-sibling::p]");
+    private final SelenideElement cancelButton = $x("//div[@role='none presentation']//*[local-name()='svg']");
     private final ElementsCollection flightRows = $$x("//div[p[contains(.,'000 VND')]/preceding-sibling::p]/ancestor::div[3]");
-//    private final String ecoRows = "//div[p[contains(.,'000 VND')]/preceding-sibling::p]/ancestor::div[3]/div[2]/div[%d]";
 
-
-    @Step("Close po-up if it is visible")
-    public void closePopUpIfDisplayed() {
-        if (cancelButton.isDisplayed()) {
-            cancelButton.click();
-        }
+    @Step
+    public void clickOn(String text) {
+        $x(String.format("//span[contains(.,'%s')]", text)).click();
     }
 
+    @Step("Wait for pop-up and then close it")
+    public void closePopUp() {
+        cancelButton.shouldBe(visible);
+        cancelButton.click();
+    }
+
+    @Step("Get all fly datas")
     public List<FlyInfo> getAllFlyDatas() {
         return flightRows.stream()
                 .map(row -> {
-                    String content = row.getText(); // Lấy toàn bộ nội dung text của một row
-                    String[] parts = content.split("\\n"); // Tách theo dấu xuống dòng (\n)
-
-                    // Parse từng thành phần theo yêu cầu
+                    String[] parts = row.getDomProperty("outerText").split("\\n");
                     String code = parts[0];
-                    String[] times = parts[1].split(" To "); // Tách thời gian bắt đầu và kết thúc
-                    LocalTime startTime = LocalTime.parse(times[0]);
-                    LocalTime endTime = LocalTime.parse(times[1]);
-                    String flyName = parts[2].split("-")[0].trim(); // Lấy tên chuyến bay (bỏ Direct flight)
-                    String flyType = parts[2].split("-")[1].trim(); // Lấy loại chuyến bay
-                    String businessPrice = parts[4]; // Lấy giá Business
-                    String skyBoosPrice = parts[6]; // Lấy giá Sky Boss
-                    String deluxePrice = parts[8]; // Lấy giá Deluxe
-                    String ecoPrice = parts[10]; // Lấy giá Economy
+                    LocalTime[] times = parseTimes(parts[1]);
+                    String[] flightDetails = parts[2].split("-");
+                    String flyName = flightDetails[0].trim();
+                    String flyType = flightDetails[1].trim();
+                    String businessPrice = parsePrice(parts[4]);
+                    int priceOffset = businessPrice.equals(localization.getContent("sold.out")) ? 2 : 4;
+                    String skyBoosPrice = parsePrice(parts[4 + priceOffset]);
+                    String deluxePrice = parsePrice(parts[8 + priceOffset]);
+                    String ecoPrice = parsePrice(parts[12 + priceOffset]);
 
-                    // Tạo đối tượng FlyInfo
                     return FlyInfo.builder()
                             .code(code)
-                            .startTime(startTime)
-                            .endTime(endTime)
+                            .startTime(times[0])
+                            .endTime(times[1])
                             .flyName(flyName)
                             .flyType(flyType)
                             .businessPrice(businessPrice)
@@ -59,41 +58,22 @@ public class SelectFlightPage extends BasePage {
                             .ecoPrice(ecoPrice)
                             .build();
                 })
-                .collect(Collectors.toList()); // Trả về danh sách các FlyInfo
+                .collect(Collectors.toList());
     }
 
-//    @Step("Get all fly datas")
-//    public List<FlyInfo> getAllFlyDatas() {
-//        return flightRows.stream()
-//                .map(row -> {
-//                    String[] parts = row.getText().split("\\n");
-//
-//                    // Sử dụng hàm phụ để tách và xử lý từng phần
-//                    String code = parts[0];
-//                    LocalTime[] times = parseTimes(parts[1]);
-//                    String[] flightDetails = parts[2].split("-");
-//
-//                    return FlyInfo.builder()
-//                            .code(code)
-//                            .startTime(times[0])
-//                            .endTime(times[1])
-//                            .flyName(flightDetails[0].trim())
-//                            .flyType(flightDetails[1].trim())
-//                            .businessPrice(parts[4])
-//                            .skyBoosPrice(parts[6])
-//                            .deluxePrice(parts[8])
-//                            .ecoPrice(parts[10])
-//                            .build();
-//                })
-//                .collect(Collectors.toList());
-//    }
-//
-//    // Hàm phụ để tách và parse thời gian
-//    private LocalTime[] parseTimes(String timeString) {
-//        return Arrays.stream(timeString.split(" To "))
-//                .map(LocalTime::parse)
-//                .toArray(LocalTime[]::new);
-//    }
+    // Hàm phụ để parse thời gian
+    private LocalTime[] parseTimes(String timeString) {
+        return Arrays.stream(timeString.split(localization.getContent("time.to.time")))
+                .map(LocalTime::parse)
+                .toArray(LocalTime[]::new);
+    }
+
+    // Hàm phụ để parse giá vé
+    private String parsePrice(String value) {
+        return localization.getContent("sold.out").equalsIgnoreCase(value)
+                ? value
+                : value.replaceAll("[^0-9,]", "").trim();
+    }
 
     @Step("Select the cheapest fly")
     public void selectCheapestFly(List<FlyInfo> flyInfoList, ClassType classType) {

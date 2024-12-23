@@ -33,8 +33,6 @@ public class FlyInfo {
         int lowestPriceIndex = -1;
         for (int i = 0; i < flyInfoList.size(); i++) {
             int price = getPrice(flyInfoList.get(i), classType);
-            System.out.println(flyInfoList.get(i).getEcoPrice());
-            System.out.println(price);
             if (price == -1) continue;// Skip if the price is not available or sold out
             if (price != -1 && price < lowestPrice) {
                 lowestPrice = price;

@@ -10,6 +10,7 @@
     "adult": "성인",
     "children":"소아",
     "infant": "유아",
-    "sold.out": "Sold out"
+    "sold.out": "Sold out",
+    "time.to.time": " 부터 "
   }
 }

@@ -40,26 +40,22 @@ public class VietJetTest extends BaseTest {
     public void testSearch() {
         homePage.selectFlyType(FlyType.RETURN);
         homePage.fillFrom(ticket.getFrom());
-//        homePage.clickDepartureDateButton();
-//        homePage.selectDate(ticket.getDepartureDate());
         homePage.fillTo(ticket.getTo());
-//        homePage.clickReturnDateButton();
         homePage.selectDate(ticket.getDepartureDate());
         homePage.selectDate(ticket.getReturnDate());
         homePage.adjustQuantity(AgeType.ADULT, ticket.getNumberOfAdult());
 //        homePage.shouldTicketSelectionFormBeDisplayed(ticket); // Need to correct this method
 
-//        homePage.closePassengerForm();
-        homePage.clickOn("Let's go"); // Not working
+        homePage.clickOn("Let's go");
 
-        selectFlightPage.closePopUpIfDisplayed();
-        List<FlyInfo> takeOnList = selectFlightPage.getAllFlyDatas(); // Need to correct this method
+        selectFlightPage.closePopUp();
+        List<FlyInfo> takeOnList = selectFlightPage.getAllFlyDatas();
         System.out.println(takeOnList);
         selectFlightPage.selectCheapestFly(takeOnList);
+        selectFlightPage.clickOn("Continue");
         List<FlyInfo> takeOffList = selectFlightPage.getAllFlyDatas();
         System.out.println(takeOffList);
         selectFlightPage.selectCheapestFly(takeOffList);
-
 
 
     }
