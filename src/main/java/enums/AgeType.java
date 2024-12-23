@@ -1,13 +1,14 @@
 package enums;
 
-import base.BasePage;
 import lombok.Getter;
+
+import static base.BasePage.localization;
 
 @Getter
 public enum AgeType {
-    ADULT(BasePage.localization.getContent("adult")),
-    CHILD(BasePage.localization.getContent("children")),
-    INFANT(BasePage.localization.getContent("infant"));
+    ADULT(localization.getContent("adult")),
+    CHILD(localization.getContent("children")),
+    INFANT(localization.getContent("infant"));
 
     private final String value;
 

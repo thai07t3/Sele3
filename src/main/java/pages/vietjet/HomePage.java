@@ -6,13 +6,16 @@ import com.codeborne.selenide.SelenideElement;
 import enums.AdjustType;
 import enums.AgeType;
 import enums.FlyType;
+import enums.Location;
 import io.qameta.allure.Step;
 import models.Ticket;
 import utils.Constants;
 import utils.DateUtils;
+import utils.EnumUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
@@ -38,6 +41,42 @@ public class HomePage extends BasePage {
     private final String quantityAdjustment = "//div[div[p[text()='%s']]]/following-sibling::div//button[%d]";
     private final String currentNumber = "//div[div[p[text()='%s']]]/following-sibling::div//span[@weight='Bold']";
 
+
+    @Step("Fill ticket information")
+    public void fillTicketInformation(Ticket ticket) {
+        if (Objects.nonNull(ticket)) {
+            if (Objects.nonNull(ticket.getFlyType())) {
+                selectFlyType(ticket.getFlyType());
+            }
+            if (Objects.nonNull(ticket.getFrom())) {
+                fillFrom(ticket.getFrom());
+            }
+            if (Objects.nonNull(ticket.getTo())) {
+                fillTo(ticket.getTo());
+            }
+            if (Objects.nonNull(ticket.getDepartureDate())) {
+                selectDate(ticket.getDepartureDate());
+            }
+            if (Objects.nonNull(ticket.getReturnDate())) {
+                selectDate(ticket.getReturnDate());
+            }
+            if (Objects.nonNull(ticket.getNumberOfAdult())) {
+                adjustQuantity(AgeType.ADULT, ticket.getNumberOfAdult());
+            }
+            if (Objects.nonNull(ticket.getNumberOfChild())) {
+                adjustQuantity(AgeType.CHILD, ticket.getNumberOfChild());
+            }
+            if (Objects.nonNull(ticket.getNumberOfInfant())) {
+                adjustQuantity(AgeType.INFANT, ticket.getNumberOfInfant());
+            }
+            if (Objects.nonNull(ticket.getPromotionCode())) {
+                // TODO: implement this
+            }
+            if (Objects.nonNull(ticket.isLowestFare())) {
+                // TODO: implement this
+            }
+        }
+    }
 
     @Step("Accept cookies if present")
     public void acceptCookiesIfDisplay() {
@@ -95,7 +134,6 @@ public class HomePage extends BasePage {
         returnDateButton.click();
     }
 
-
     @Step("Select date: {plusDays} days from now")
     public void selectDate(int plusDays) {
         LocalDate targetDate = LocalDate.now().plusDays(plusDays);
@@ -136,7 +174,7 @@ public class HomePage extends BasePage {
         while (currentQuantity < expectedNumber) {
             $x(String.format(quantityAdjustment, type.getValue(), adjustType.getValue())).click();
             currentQuantity = Integer.parseInt($x(String.format(currentNumber, type.getValue())).getText());
-            if (currentQuantity == Constants.MAX_QUANTITY) break; // prevent infinite loop
+            if (currentQuantity == Constants.MAX_QUANTITY) break; // Maximum quantity is 9
         }
     }
 
@@ -146,8 +184,19 @@ public class HomePage extends BasePage {
 
     @Step("Should ticket selection form be displayed")
     public void shouldTicketSelectionFormBeDisplayed(Ticket ticket) {
-        fromInput.shouldBe(Condition.have(Condition.text(ticket.getFrom())));
-        toInput.shouldBe(Condition.have(Condition.text(ticket.getTo())));
+        Location from = EnumUtils.getByValueOrThrow(Location.class, ticket.getFrom(), "getName");
+        Location to = EnumUtils.getByValueOrThrow(Location.class, ticket.getTo(), "getName");
+
+        fromInput.shouldBe(
+                Condition.have(
+                        Condition.attribute(
+                                "value",
+                                from.getName() + " (" + from.getCode() + ")")));
+        toInput.shouldBe(
+                Condition.have(
+                        Condition.attribute(
+                                "value",
+                                to.getName() + " (" + to.getCode() + ")")));
         departureDateButton.sibling(0).shouldHave(Condition.text(
                 ticket.getDepartureDate()
                         .format(DateTimeFormatter
@@ -160,5 +209,7 @@ public class HomePage extends BasePage {
         ));
         $x(String.format(currentNumber, AgeType.ADULT.getValue())).shouldHave(Condition.text(
                 String.valueOf(ticket.getNumberOfAdult())));
+
+        // TODO: Childrens and Infants are not implemented yet
     }
 }

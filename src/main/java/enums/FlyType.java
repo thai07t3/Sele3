@@ -1,12 +1,13 @@
 package enums;
 
-import base.BasePage;
 import lombok.Getter;
+
+import static base.BasePage.localization;
 
 @Getter
 public enum FlyType {
-    ONE_WAY(BasePage.localization.getContent("oneway")),
-    RETURN(BasePage.localization.getContent("return"));
+    ONE_WAY(localization.getContent("oneway")),
+    RETURN(localization.getContent("return"));
 
     private final String value;
 

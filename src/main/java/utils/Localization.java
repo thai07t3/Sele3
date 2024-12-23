@@ -25,8 +25,8 @@ public class Localization {
         locale = new Locale(language);
     }
 
-    public String getLocator(String key) {
-        return languageData.get("locator").get(key).asText();
+    public String getLocation(String key) {
+        return languageData.get("location").get(key).asText();
     }
 
     public String getContent(String key) {

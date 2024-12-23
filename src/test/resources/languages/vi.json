@@ -1,5 +1,7 @@
 {
-  "locator": {
+  "location": {
+    "ho.chi.minh": "Tp. Hồ Chí Minh",
+    "ha.noi": "Hà Nội"
   },
   "content": {
     "oneway": "Một chiều",
@@ -8,9 +10,11 @@
     "departureDate": "Ngày đi",
     "returnDate": "Ngày về",
     "adult": "Người lớn",
-    "children":"Trẻ em",
+    "children": "Trẻ em",
     "infant": "Em bé",
     "sold.out": "Hết chỗ",
-    "time.to.time": " Đến "
+    "time.to.time": " Đến ",
+    "search.button": "Tìm chuyến bay",
+    "continue.button": "Đi tiếp"
   }
 }

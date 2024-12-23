@@ -4,6 +4,7 @@ import base.BasePage;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import enums.ClassType;
+import enums.Languages;
 import io.qameta.allure.Step;
 import models.FlyInfo;
 
@@ -16,6 +17,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 
 public class SelectFlightPage extends BasePage {
+    private final SelenideElement addPopup = $x("//div[@role='none presentation']");
     private final SelenideElement cancelButton = $x("//div[@role='none presentation']//*[local-name()='svg']");
     private final ElementsCollection flightRows = $$x("//div[p[contains(.,'000 VND')]/preceding-sibling::p]/ancestor::div[3]");
 
@@ -26,8 +28,15 @@ public class SelectFlightPage extends BasePage {
 
     @Step("Wait for pop-up and then close it")
     public void closePopUp() {
-        cancelButton.shouldBe(visible);
-        cancelButton.click();
+        try {
+            Thread.sleep(6000); // TODO: replace with a better way to wait for pop-up
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        if (!localization.getLocale().equals(Languages.KOREAN.getCode())) { // Korean language doesn't have pop-up //TODO: improve this condition to handle all languages
+            cancelButton.shouldBe(visible);
+            cancelButton.click();
+        }
     }
 
     @Step("Get all fly datas")
@@ -35,6 +44,7 @@ public class SelectFlightPage extends BasePage {
         return flightRows.stream()
                 .map(row -> {
                     String[] parts = row.getDomProperty("outerText").split("\\n");
+                    System.out.println(Arrays.toString(parts));
                     String code = parts[0];
                     LocalTime[] times = parseTimes(parts[1]);
                     String[] flightDetails = parts[2].split("-");
@@ -61,14 +71,12 @@ public class SelectFlightPage extends BasePage {
                 .collect(Collectors.toList());
     }
 
-    // Hàm phụ để parse thời gian
     private LocalTime[] parseTimes(String timeString) {
         return Arrays.stream(timeString.split(localization.getContent("time.to.time")))
                 .map(LocalTime::parse)
                 .toArray(LocalTime[]::new);
     }
 
-    // Hàm phụ để parse giá vé
     private String parsePrice(String value) {
         return localization.getContent("sold.out").equalsIgnoreCase(value)
                 ? value

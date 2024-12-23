@@ -1,5 +1,7 @@
 {
-  "locator": {
+  "location": {
+    "ho.chi.minh": "Ho Chi Minh",
+    "ha.noi": "Ha Noi"
   },
   "content": {
     "oneway": "One-way",
@@ -8,9 +10,11 @@
     "departureDate": "Departure date",
     "returnDate": "Return Date",
     "adult": "Adults",
-    "children":"Childrens",
+    "children": "Childrens",
     "infant": "Infants",
     "sold.out": "Sold out",
-    "time.to.time": " To "
+    "time.to.time": " To ",
+    "search.button": "Let's go",
+    "continue.button": "Continue"
   }
 }
