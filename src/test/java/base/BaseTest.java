@@ -2,18 +2,16 @@ package base;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.selenide.AllureSelenide;
 import io.qameta.allure.selenide.LogType;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import utils.ConfigReader;
 import utils.Constants;
 import utils.Localization;
-
-import static com.codeborne.selenide.Selenide.open;
 
 public class BaseTest {
     public static String language;
@@ -44,7 +42,9 @@ public class BaseTest {
         String prefix = browser + ".";
 
         Configuration.browser = configReader.getString(prefix + "browser");
-//        Configuration.startMaximized = configReader.getBoolean(prefix + "isMaximized");
+        if (configReader.getBoolean(prefix + "isMaximized")) {
+            WebDriverRunner.getWebDriver().manage().window().maximize();
+        }
         Configuration.headless = configReader.getBoolean(prefix + "headless");
 
         String gridUrl = configReader.getString(prefix + "gridUrl");

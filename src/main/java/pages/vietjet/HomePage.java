@@ -117,7 +117,7 @@ public class HomePage extends BasePage {
         $x(String.format(locator, from)).click();
     }
 
-    @Step("Fill From with value: {to}")
+    @Step("Fill To with value: {to}")
     public void fillTo(String to) {
         toInput.val(to);
         String locator = "//div[.='%s']";
@@ -167,19 +167,19 @@ public class HomePage extends BasePage {
         ).click();
     }
 
-    @Step("Adjust quantity of {type} to {quantity}")
-    public void adjustQuantity(AgeType type, int expectedNumber) {
-        int currentQuantity = Integer.parseInt($x(String.format(currentNumber, type.getValue())).getText());
+    @Step("Adjust quantity of {ageType} to {expectedNumber}")
+    public void adjustQuantity(AgeType ageType, int expectedNumber) {
+        int currentQuantity = getQuantity(ageType);
         AdjustType adjustType = currentQuantity < expectedNumber ? AdjustType.INCREASE : AdjustType.DECREASE;
-        while (currentQuantity < expectedNumber) {
-            $x(String.format(quantityAdjustment, type.getValue(), adjustType.getValue())).click();
-            currentQuantity = Integer.parseInt($x(String.format(currentNumber, type.getValue())).getText());
+        while (currentQuantity != expectedNumber) {
+            $x(String.format(quantityAdjustment, ageType.getValue(), adjustType.getValue())).click();
+            currentQuantity = Integer.parseInt($x(String.format(currentNumber, ageType.getValue())).getText());
             if (currentQuantity == Constants.MAX_QUANTITY) break; // Maximum quantity is 9
         }
     }
 
-    private int getQuantity(AgeType type) {
-        return Integer.parseInt($x(String.format(currentNumber, type.getValue())).getText());
+    private int getQuantity(AgeType ageType) {
+        return Integer.parseInt($x(String.format(currentNumber, ageType.getValue())).getText());
     }
 
     @Step("Should ticket selection form be displayed")
