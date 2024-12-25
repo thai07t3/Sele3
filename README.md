@@ -2,18 +2,35 @@
 
 Build a framework with Selenide
 
+## Features and User Cases
+
+| Feature/User Case                | Status                                      |
+|----------------------------------|---------------------------------------------|
+| Selenide FW                      | ✔️                                           |
+| Reports                          | ✔️                                           |
+| Test retry                       |                                            |
+| Parallel/distributed testing     | ✔️                                          |
+| Cross browsers testing           | ✔️                                           |
+| Selenium Grid/Shard              |                                            |
+| CI                               |                                           |
+| Content testing                  |                                            |
+| Multiple languages testing       | ✔️                                           |
+| Group tests by purposes          |                                            |
+| Source control practice          | ✔️                                           |
+| Switch test environment          |                                            |
+| Wrap custom controls             |                
+
 ## Project Overview
 
 This project is a test automation framework built using Selenide, a powerful library for browser automation in Java. The
 framework is designed to run tests in parallel across multiple browsers and generate detailed test reports using Allure
-and the default TestNG/JUnit reporting mechanisms.
+and the default TestNG reporting mechanisms.
 
 ## Prerequisites
 
-- Java 11 or higher
-- Maven 3.6.3 or higher
+- Java 17 or higher
+- Maven 3.13.0 or higher
 - Allure Commandline (for generating Allure reports)
-- WebDriver binaries managed by WebDriverManager
 
 ## Project Structure
 

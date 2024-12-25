@@ -1,0 +1,22 @@
+{
+  "location": {
+    "ho.chi.minh": "호치민 시",
+    "ha.noi": "하노이 시"
+  },
+  "content": {
+    "oneway": "편도",
+    "return": "왕복",
+    "from": "출발지",
+    "departureDate": "가는날",
+    "returnDate": "오는날",
+    "adult": "성인",
+    "children": "소아",
+    "infant": "유아",
+    "sold.out": "Sold out",
+    "time.to.time": " 부터 ",
+    "search.button": "항공편 조회",
+    "continue.button": "계속",
+    "departure.flight": "출발편",
+    "return.flight": "귀국편"
+  }
+}

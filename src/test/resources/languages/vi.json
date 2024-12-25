@@ -1,0 +1,22 @@
+{
+  "location": {
+    "ho.chi.minh": "Tp. Hồ Chí Minh",
+    "ha.noi": "Hà Nội"
+  },
+  "content": {
+    "oneway": "Một chiều",
+    "return": "Khứ hồi",
+    "from": "Điểm khởi hành",
+    "departureDate": "Ngày đi",
+    "returnDate": "Ngày về",
+    "adult": "Người lớn",
+    "children": "Trẻ em",
+    "infant": "Em bé",
+    "sold.out": "Hết chỗ",
+    "time.to.time": " Đến ",
+    "search.button": "Tìm chuyến bay",
+    "continue.button": "Đi tiếp",
+    "departure.flight": "Chuyến đi",
+    "return.flight": "Chuyến về"
+  }
+}

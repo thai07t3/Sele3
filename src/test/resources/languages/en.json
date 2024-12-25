@@ -1,0 +1,22 @@
+{
+  "location": {
+    "ho.chi.minh": "Ho Chi Minh",
+    "ha.noi": "Ha Noi"
+  },
+  "content": {
+    "oneway": "One-way",
+    "return": "Return",
+    "from": "From",
+    "departureDate": "Departure date",
+    "returnDate": "Return Date",
+    "adult": "Adults",
+    "children": "Childrens",
+    "infant": "Infants",
+    "sold.out": "Sold out",
+    "time.to.time": " To ",
+    "search.button": "Let's go",
+    "continue.button": "Continue",
+    "departure.flight": "Departure flight",
+    "return.flight": "Return flight"
+  }
+}
