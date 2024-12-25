@@ -4,6 +4,7 @@ import base.BasePage;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import enums.ClassType;
+import enums.FlyType;
 import enums.Languages;
 import io.qameta.allure.Step;
 import models.FlyInfo;
@@ -44,7 +45,6 @@ public class SelectFlightPage extends BasePage {
         return flightRows.stream()
                 .map(row -> {
                     String[] parts = row.getDomProperty("outerText").split("\\n");
-                    System.out.println(Arrays.toString(parts));
                     String code = parts[0];
                     LocalTime[] times = parseTimes(parts[1]);
                     String[] flightDetails = parts[2].split("-");
@@ -92,5 +92,20 @@ public class SelectFlightPage extends BasePage {
     @Step("Select the cheapest fly")
     public void selectCheapestFly(List<FlyInfo> flyInfoList) {
         selectCheapestFly(flyInfoList, ClassType.ECO);
+    }
+
+    @Step("Select the cheapest flies")
+    public void selectCheapestFlies(FlyType flyType) {
+        if (flyType.equals(FlyType.RETURN)) {
+            selectCheapestFly(getAllFlyDatas());
+            clickOn(localization.getContent("continue.button"));
+            selectCheapestFly(getAllFlyDatas());
+            clickOn(localization.getContent("continue.button"));
+        } else {
+            {
+                selectCheapestFly(getAllFlyDatas());
+                clickOn(localization.getContent("continue.button"));
+            }
+        }
     }
 }

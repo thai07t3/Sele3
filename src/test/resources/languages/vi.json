@@ -15,6 +15,8 @@
     "sold.out": "Hết chỗ",
     "time.to.time": " Đến ",
     "search.button": "Tìm chuyến bay",
-    "continue.button": "Đi tiếp"
+    "continue.button": "Đi tiếp",
+    "departure.flight": "Chuyến đi",
+    "return.flight": "Chuyến về"
   }
 }

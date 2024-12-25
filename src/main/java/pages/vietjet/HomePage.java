@@ -198,14 +198,10 @@ public class HomePage extends BasePage {
                                 "value",
                                 to.getName() + " (" + to.getCode() + ")")));
         departureDateButton.sibling(0).shouldHave(Condition.text(
-                ticket.getDepartureDate()
-                        .format(DateTimeFormatter
-                                .ofPattern(Constants.DATE_FORMAT))
+                ticket.getDepartureDateAsString()
         ));
         returnDateButton.sibling(0).shouldBe(Condition.text(
-                ticket.getReturnDate()
-                        .format(DateTimeFormatter
-                                .ofPattern(Constants.DATE_FORMAT))
+                ticket.getReturnDateAsString()
         ));
         $x(String.format(currentNumber, AgeType.ADULT.getValue())).shouldHave(Condition.text(
                 String.valueOf(ticket.getNumberOfAdult())));

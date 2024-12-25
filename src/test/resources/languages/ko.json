@@ -15,6 +15,8 @@
     "sold.out": "Sold out",
     "time.to.time": " 부터 ",
     "search.button": "항공편 조회",
-    "continue.button": "계속"
+    "continue.button": "계속",
+    "departure.flight": "출발편",
+    "return.flight": "귀국편"
   }
 }
