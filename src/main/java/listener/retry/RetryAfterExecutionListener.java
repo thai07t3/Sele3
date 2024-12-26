@@ -1,53 +1,58 @@
 package listener.retry;
 
-import io.qameta.allure.Allure;
-import io.qameta.allure.Step;
-import org.testng.IRetryAnalyzer;
-import org.testng.ITestContext;
-import org.testng.ITestListener;
-import org.testng.ITestResult;
+import org.testng.*;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 import utils.RetryConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RetryAfterExecutionListener implements ITestListener {
-    private static final List<ITestResult> failedTests = new ArrayList<>();
+
+    private final List<ITestResult> failedTests = new ArrayList<>();
+    private final int retryCount = RetryConfig.getRetryCount();
 
     @Override
     public void onTestFailure(ITestResult result) {
-        failedTests.add(result);
+        // Record failed tests for retry
+        if (RetryConfig.getRetryType().equals("after")) {
+            failedTests.add(result);
+        }
     }
 
     @Override
     public void onFinish(ITestContext context) {
-        String retryType = RetryConfig.getRetryType();
-        if (retryType.equalsIgnoreCase("after")) {
-            int maxRetryCount = RetryConfig.getRetryCount();
-            for (int i = 0; i < maxRetryCount; i++) {
-                List<ITestResult> currentFailedTests = new ArrayList<>(failedTests);
-                failedTests.clear();
-                for (ITestResult failedTest : currentFailedTests) {
-                    retryTest(failedTest, i + 1);
-                }
-            }
+        if (RetryConfig.getRetryType().equals("after") && retryCount > 0 && !failedTests.isEmpty()) {
+            retryFailedTests(context);
         }
     }
 
-    @Step("Retrying test {testName}, attempt {attempt}")
-    private void retryTest(ITestResult failedTest, int attempt) {
-        String testName = failedTest.getMethod().getMethodName(); // Trích xuất tên test
-        retryTestStep(testName, attempt); // Gọi step với tham số tĩnh
-        System.out.println("Retrying:" + testName + " (Attempt " + attempt + ")");
-        try {
-            failedTest.getMethod().getTestClass().getRealClass()
-                    .getMethod(failedTest.getMethod().getMethodName())
-                    .invoke(failedTest.getInstance());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    private void retryFailedTests(ITestContext context) {
+        TestNG testNG = new TestNG(); // Create a new TestNG instance
+        XmlSuite suite = new XmlSuite(); // Create a new XmlSuite instance
+        suite.setName("RetryFailedTests");
 
-    private void retryTestStep(String testName, int attempt) {
+        XmlTest test = new XmlTest(suite); // Create a new XmlTest instance
+        test.setName("RetryFailedTestMethods");
+
+        List<XmlClass> classes = new ArrayList<>();
+
+        for (ITestResult failedTest : failedTests) { // Iterate through failed tests
+            Class<?> testClass = failedTest.getMethod().getTestClass().getRealClass();
+            XmlClass xmlClass = new XmlClass(testClass);
+
+            XmlInclude include = new XmlInclude(failedTest.getMethod().getMethodName()); // Include failed test method
+            xmlClass.setIncludedMethods(Collections.singletonList(include)); // Add included method to class
+
+            classes.add(xmlClass); // Add class to list
+        }
+
+        test.setXmlClasses(classes); // Set classes to test
+        testNG.setXmlSuites(Collections.singletonList(suite)); // Set suites to TestNG
+        testNG.run(); // Run TestNG
     }
 }

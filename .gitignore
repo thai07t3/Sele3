@@ -10,6 +10,7 @@ target/
 *.ipr
 /target/
 /allure-results/
+/test-output/
 
 ### Eclipse ###
 .apt_generated

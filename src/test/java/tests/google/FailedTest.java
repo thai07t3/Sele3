@@ -12,24 +12,24 @@ public class FailedTest extends BaseTest {
     private final GooglePage googlePage = new GooglePage();
     private final ResultPage resultsPage = new ResultPage();
 
-    @Test
-    public void failedTest_01() {
-        open("https://google.com/");
-        googlePage.searchFor("selenide java 1");
+//    @Test
+//    public void failedTest_01() {
+//        open("https://google.com/");
+//        googlePage.searchFor("selenide java 1");
+//
+//        resultsPage.checkBotStuff1IsVisible();
+//    }
 
-        resultsPage.checkBotStuff1IsVisible();
-    }
-
-    @Test
-    public void passTest_01() {
-        open("https://google.com/");
-        googlePage.searchFor("selenide java");
-    }
+//    @Test
+//    public void passTest_01() {
+//        open("https://google.com/");
+//        googlePage.searchFor("selenide java");
+//    }
 
     @Test(retryAnalyzer = ImmediateRetry.class)
-    public void failedTest_02() {
+    public void failedTest_02_set_retry() {
         open("https://google.com/");
-        googlePage.searchFor("selenide java 1");
+        googlePage.searchFor("Failed Test 02 - Set ImmediateRetry");
 
         resultsPage.checkBotStuff1IsVisible();
     }
