@@ -4,6 +4,8 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
+import java.time.Duration;
+
 import static com.codeborne.selenide.Selenide.$;
 
 public class ResultPage {
@@ -17,6 +19,6 @@ public class ResultPage {
 
     @Step("Check that bot stuff 1 is visible")
     public void checkBotStuff1IsVisible() {
-        botstuff1.shouldBe(Condition.visible);
+        botstuff1.shouldBe(Condition.visible, Duration.ofSeconds(2));
     }
 }

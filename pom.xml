@@ -12,11 +12,13 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <aspectj.version>1.9.22.1</aspectj.version>
-        <suiteXmlFile>src/test/resources/vietjetTest.xml</suiteXmlFile>
+        <suiteXmlFile>src/test/resources/googleTest.xml</suiteXmlFile>
         <browser>chrome</browser>
         <parallel>classes</parallel>
         <threadCount>1</threadCount>
         <language>en</language>
+        <retryType>immediate</retryType>
+        <retryCount>1</retryCount>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -112,6 +114,8 @@
                         <parallel>${parallel}</parallel>
                         <threadCount>${threadCount}</threadCount>
                         <language>${language}</language>
+                        <retryType>{retryType}</retryType>
+                        <retryCount>{retryCount}</retryCount>
                     </systemPropertyVariables>
                 </configuration>
                 <dependencies>

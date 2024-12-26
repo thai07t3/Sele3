@@ -3,10 +3,27 @@
     <listeners>
         <listener class-name="listener.retry.RetryAfterExecutionListener"/>
     </listeners>
+
     <test name="Test Execution">
+        <parameter name="retryType" value="immediate"></parameter>
+        <parameter name="retryCount" value="0"></parameter>
+        <parameter name="parallel" value="methods"></parameter>
+        <parameter name="threadCount" value="2"></parameter>
         <classes>
-            <class name="tests.google.PassTest"/>
-            <class name="tests.google.FailedTest"/>
+            <class name="tests.google.PassTest">
+                <methods>
+                    <include name="passTest_03"/>
+                    <include name="failedTest_04"/>
+                    <include name="failedTest_05"/>
+                </methods>
+            </class>
+            <class name="tests.google.FailedTest">
+                <methods>
+                    <include name="failedTest_01"/>
+                    <include name="passTest_01"/>
+                    <include name="failedTest_02"/>
+                </methods>
+            </class>
         </classes>
     </test>
 </suite>
