@@ -49,6 +49,7 @@ public class RetryAfterExecutionListener implements ITestListener {
             xmlClass.setIncludedMethods(Collections.singletonList(include)); // Add included method to class
 
             classes.add(xmlClass); // Add class to list
+            System.out.println("After - Retrying test: " + testClass.getName() + "." + failedTest.getMethod().getMethodName());
         }
 
         test.setXmlClasses(classes); // Set classes to test
