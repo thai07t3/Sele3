@@ -55,12 +55,13 @@ jobs:
 
       - name: Send Email with Test Report
         if: always()
-        uses: dawidd6/action-send-mail@v3
+        uses: dawidd6/action-send-mail@v4
         with:
           to: lqthai07t3@gmail.com
           from: thai07t3@gmail.com
           smtp-server: smtp.gmail.com
-          smtp-port: 587
+          smtp-port: 465
+          secure: true
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "(${{ env.timestamp }}) - Test Report - Allure"
