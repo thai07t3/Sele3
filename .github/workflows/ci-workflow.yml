@@ -59,8 +59,8 @@ jobs:
         with:
           to: lqthai07t3@gmail.com
           from: thai07t3@gmail.com
-#          smtp-server: smtp.gmail.com
-#          smtp-port: 587
+          smtp-server: smtp.gmail.com
+          smtp-port: 587
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "(${{ env.timestamp }}) - Test Report - Allure"
