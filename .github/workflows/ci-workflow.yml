@@ -34,6 +34,9 @@ jobs:
             sudo unzip -o allure.zip -d /opt/allure
             sudo ln -s /opt/allure/allure /usr/bin/allure
 
+      - name: Verify Allure Installation
+        run: allure --version
+
       - name: Install Xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
