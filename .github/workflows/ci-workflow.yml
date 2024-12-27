@@ -59,8 +59,8 @@ jobs:
         with:
           to: lqthai07t3@gmail.com
           from: thai07t3@gmail.com
-          smtp-server: smtp.gmail.com
-          smtp-port: 465
+          server_address: smtp.gmail.com
+          server_port: 465
           secure: true
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
