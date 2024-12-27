@@ -25,7 +25,7 @@ jobs:
 
       # Bước 3: Chạy kiểm thử với Maven
       - name: Run Maven Tests
-        run: mvn clean test allure:report -DretryType=immediate -DretryCount=1 -DthreadCount=3 -Dparallel=methods
+        run: mvn clean test allure:report
 
       - name: Get Current Date and Time
         id: date
