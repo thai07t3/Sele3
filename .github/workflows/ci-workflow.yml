@@ -40,20 +40,18 @@ jobs:
       - name: Run Maven Tests
         env:
           DISPLAY: :1 # Quan trọng: Truyền biến DISPLAY vào quá trình chạy Maven
-        run: mvn clean test allure:report
+        run: mvn clean test
 
       - name: Get Current Date and Time
         if: always()
         id: date
         run: echo "timestamp=$(date '+%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
 
-      - name: Archive Allure Report
+      - name: Generate Allure Report
         if: always()
         run: |
-          mkdir -p report
-          cd target/allure-results
-          zip -r ../../../report/allure-report_${{ env.timestamp }}.zip *
-          cd ../../..
+          allure generate ./target/allure-results -c -o report/allure-report_${timestamp}
+          zip -r report/allure-report_${timestamp}.zip allure-zip/allure-report_${timestamp}
 
       - name: Send Email with Test Report
         if: always()
@@ -61,8 +59,8 @@ jobs:
         with:
           to: lqthai07t3@gmail.com
           from: thai07t3@gmail.com
-          smtp-server: smtp.gmail.com
-          smtp-port: 587
+#          smtp-server: smtp.gmail.com
+#          smtp-port: 587
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "(${{ env.timestamp }}) - Test Report - Allure"
@@ -70,7 +68,7 @@ jobs:
             <h2>Test Report</h2>
             <p>Chào bạn,</p>
             <p>Đây là báo cáo kiểm thử tự động từ GitHub Actions.</p>
-            <p>Thời gian kiểm thử: <strong>${{ env.timestamp }}</strong></p>
-            <p>Vui lòng xem báo cáo đính kèm.</p>
+#            <p>Thời gian kiểm thử: <strong>${{ env.timestamp }}</strong></p>
+#            <p>Vui lòng xem báo cáo đính kèm.</p>
           content_type: text/html
-          attachments: report/allure-report_${{ env.timestamp }}.zip
+#          attachments: report/allure-report_${{ env.timestamp }}.zip
