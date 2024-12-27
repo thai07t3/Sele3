@@ -65,11 +65,10 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "(${{ env.timestamp }}) - Test Report - Allure"
-          body: |
+          html_body: |
             <h2>Test Report</h2>
             <p>Chào bạn,</p>
             <p>Đây là báo cáo kiểm thử tự động từ GitHub Actions.</p>
 #            <p>Thời gian kiểm thử: <strong>${{ env.timestamp }}</strong></p>
 #            <p>Vui lòng xem báo cáo đính kèm.</p>
-          content_type: text/html
 #          attachments: report/allure-report_${{ env.timestamp }}.zip
