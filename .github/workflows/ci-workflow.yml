@@ -54,6 +54,7 @@ jobs:
           cd ../../..
 
       - name: Send Email with Test Report
+        if: always()
         uses: dawidd6/action-send-mail@v3
         with:
           to: lqthai07t3@gmail.com
@@ -65,9 +66,9 @@ jobs:
           subject: "(${{ env.timestamp }}) - Test Report - Allure"
           body: |
             <h2>Test Report</h2>
-            <p>Chào bạn,</p>
-            <p>Đây là báo cáo kiểm thử tự động từ GitHub Actions.</p>
-            <p>Thời gian kiểm thử: <strong>${{ env.timestamp }}</strong></p>
+            <p>Kết quả test: <strong>${{ jobs.run-tests-and-send-report.outcome }}</strong></p>
+            <p>Thời gian: ${{ steps.date.outputs.timestamp }}</p>
+            <p>Link to workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}</p>
             <p>Vui lòng xem báo cáo đính kèm.</p>
           content_type: text/html
           attachments: report/allure-report_${{ env.timestamp }}.zip
