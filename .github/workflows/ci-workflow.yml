@@ -28,6 +28,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Install Allure CLI
+        run: |
+            curl -o allure.zip -L https://github.com/allure-framework/allure2/releases/download/2.32.0/allure-2.32.0.zip
+            sudo unzip -o allure.zip -d /opt/allure
+            sudo ln -s /opt/allure/allure-2.32.0/bin/allure /usr/bin/allure
+
+      - name: Verify Allure Installation
+        run: allure --version
+
       - name: Install Xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
@@ -39,35 +48,36 @@ jobs:
 
       - name: Run Maven Tests
         env:
-          DISPLAY: :1 # Quan trọng: Truyền biến DISPLAY vào quá trình chạy Maven
-        run: mvn clean test allure:report
+          DISPLAY: :1 # IMPORTANT: Set the DISPLAY environment variable
+        run: mvn clean test
 
       - name: Get Current Date and Time
+        if: always()
         id: date
         run: echo "timestamp=$(date '+%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
 
-      - name: Archive Allure Report
+      - name: Generate Allure Report (HTML)
+        if: always()
         run: |
-          mkdir -p report
-          cd target/allure-results
-          zip -r ../../../report/allure-report_${{ env.timestamp }}.zip *
-          cd ../../..
+          allure generate target/allure-results --single-file --clean -o allure-report
+          mv allure-report/index.html allure-report/${{ env.timestamp }}_report_.html
 
-      - name: Send Email with Test Report
-        uses: dawidd6/action-send-mail@v3
+      - name: Send Email with Allure HTML Report
+        if: always()
+        uses: dawidd6/action-send-mail@v4
         with:
-          to: lqthai07t3@gmail.com
-          from: thai07t3@gmail.com
-          smtp_server: smtp.gmail.com
-          smtp_port: 587
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "(${{ env.timestamp }}) - Test Report - Allure"
-          body: |
+          to: lqthai07t3@gmail.com
+          from: thai07t3@gmail.com
+          html_body: |
             <h2>Test Report</h2>
             <p>Chào bạn,</p>
             <p>Đây là báo cáo kiểm thử tự động từ GitHub Actions.</p>
             <p>Thời gian kiểm thử: <strong>${{ env.timestamp }}</strong></p>
-            <p>Vui lòng xem báo cáo đính kèm.</p>
-          content_type: text/html
-          attachments: report/allure-report_${{ env.timestamp }}.zip
+            <p>Vui lòng xem báo cáo HTML đính kèm.</p>
+          attachments: allure-report/${{ env.timestamp }}_report_.html
