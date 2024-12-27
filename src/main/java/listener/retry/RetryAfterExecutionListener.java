@@ -27,7 +27,10 @@ public class RetryAfterExecutionListener implements ITestListener {
     @Override
     public void onFinish(ITestContext context) {
         if (RetryConfig.getRetryType().equals("after") && retryCount > 0 && !failedTests.isEmpty()) {
-            retryFailedTests(context);
+            for (int i = 0; i < retryCount; i++) {
+                System.out.println("After - Retry attempt: " + (i + 1));
+                retryFailedTests(context);
+            }
         }
     }
 
