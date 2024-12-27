@@ -28,12 +28,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Install Allure CLI using apt-get
+      - name: Install Allure CLI
         run: |
-          sudo apt-get update
-          sudo apt-get install -y apt-transport-https ca-certificates curl
-          curl -sL https://dl.bintray.com/qameta/maven-allure-cli/org/allureframework/allure-cli/2.32.0/allure-cli-2.32.0.deb -o allure-cli.deb
-          sudo dpkg -i allure-cli.deb || sudo apt-get -f install
+            curl -o allure.zip -L https://github.com/allure-framework/allure2/releases/download/2.32.0/allure-2.32.0.zip
+            sudo unzip -o allure.zip -d /opt/allure
+            sudo ln -s /opt/allure/allure-2.32.0/bin/allure /usr/bin/allure
 
       - name: Verify Allure Installation
         run: allure --version
