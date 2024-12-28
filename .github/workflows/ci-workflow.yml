@@ -20,11 +20,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
+      - name: Cache local Maven repository
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
@@ -33,9 +33,6 @@ jobs:
             curl -o allure.zip -L https://github.com/allure-framework/allure2/releases/download/2.32.0/allure-2.32.0.zip
             sudo unzip -o allure.zip -d /opt/allure
             sudo ln -s /opt/allure/allure-2.32.0/bin/allure /usr/bin/allure
-
-      - name: Verify Allure Installation
-        run: allure --version
 
       - name: Install Xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
@@ -46,55 +43,77 @@ jobs:
       - name: Set DISPLAY variable
         run: export DISPLAY=:1
 
+      # Restore Allure history from cache
       - name: Restore Allure history from cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: allure-history-cache
         with:
-          path: allure-history
-          key: allure-history-cache
+         path: allure-report-cached/history
+         key: allure-history-${{ github.ref_name }}
+
+#      - name: Restore Allure history from cache
+#        uses: actions/cache@v4
+#        id: allure-history-cache
+#        with:
+#          path: allure-history
+#          key: true
 
       - name: Run Maven Tests
         env:
           DISPLAY: :1 # IMPORTANT: Set the DISPLAY environment variable
         run: mvn clean test -DretryType=immediate -DretryCount=1 -DthreadCount=3 -Dparallel=methods
 
-#      - name: Copy cached history to results
-#        if: always()
-#        run: |
-#          if [ -d allure-history ]; then
-#            mkdir -p target/allure-results/history
-#            cp -r allure-history/* target/allure-results/history/
-#          fi
+      # Copy cached history to target/allure-results (if available)
+      - name: Copy cached history to target/allure-results
+        if: ${{ steps.allure-history-cache.outputs.cache-hit == 'true' }}
+        run: |
+          mkdir -p target/allure-results/history
+          cp -r allure-report-cached/history/* target/allure-results/history/ || true
 
-      - name: Generate Allure Report with history
-        if: always()
+      # Generate a new allure-report-cached with updated history
+      - name: Generate new Allure cached report
         run: allure generate target/allure-results -o allure-report-cached
 
-      - name: Cache updated Allure history
-        if: always()
-        run: |
-          mkdir -p allure-history
-          cp -r allure-report-cached/history allure-history/
-
-      - name: Prune history to keep latest 20 entries
-        if: always()
-        run: |
-          cd allure-history
-          ls -1t | tail -n +21 | xargs rm -rf || true
-          cd ..
-
-      - name: Save updated history to cache
-        uses: actions/cache@v3
+      # Save updated Allure history to cache
+      - name: Save updated Allure history to cache
+        uses: actions/cache@v4
         with:
-          path: allure-history
-          key: allure-history-cache
+          path: allure-report-cached/history
+          key: allure-history-${{ github.ref_name }}
 
-      - name: Generate Single File Allure Report as HTML
-        if: always()
-        run:
-          mkdir -p target/allure-results/history
-          cp -r allure-history/* target/allure-results/history/ || true
-          allure generate target/allure-results --single-file --clean -o allure-report
+      # Generate final single-file HTML report
+      - name: Generate final Allure HTML report
+        run: allure generate target/allure-results --single-file --clean -o allure-report
+
+#      - name: Generate Allure Report with history
+#        if: always()
+#        run: allure generate target/allure-results -o allure-report-cached
+#
+#      - name: Cache updated Allure history
+#        if: always()
+#        run: |
+#          mkdir -p allure-history
+#          cp -r allure-report-cached/history allure-history/
+#
+#      - name: Prune history to keep latest 20 entries
+#        if: always()
+#        run: |
+#          cd allure-history
+#          ls -1t | tail -n +21 | xargs rm -rf || true
+#          cd ..
+#
+#      - name: Save updated history to cache
+#        uses: actions/cache@v4
+#        with:
+#          path: allure-history
+#          key: allure-history-cache
+#
+#      - name: Generate Single File Allure Report as HTML
+#        if: always()
+#        run:
+#          mkdir -p target/allure-results/history
+#          cp -r allure-history/* target/allure-results/history/ || true
+#          allure generate target/allure-results --single-file --clean -o allure-report
 
       - name: Get Current Date and Time
         if: always()
