@@ -65,17 +65,19 @@ jobs:
 
       # Copy cached history to target/allure-results (if available)
       - name: Copy cached history to target/allure-results
-        if: ${{ steps.allure-history-cache.outputs.cache-hit == 'true' }}
+        if: always()
         run: |
           mkdir -p target/allure-results/history
           cp -r allure-report-cached/history/* target/allure-results/history/ || true
 
       # Generate a new allure-report-cached with updated history
       - name: Generate new Allure cached report
+        if: always()
         run: allure generate target/allure-results -o allure-report-cached
 
       # Save updated Allure history to cache
       - name: Save updated Allure history to cache
+        if: always()
         uses: actions/cache@v4
         with:
           path: allure-report-cached/history
@@ -83,6 +85,7 @@ jobs:
 
       # Generate final single-file HTML report
       - name: Generate final Allure HTML report
+        if: always()
         run: allure generate target/allure-results --single-file --clean -o allure-report
 
 #      - name: Generate Allure Report with history
