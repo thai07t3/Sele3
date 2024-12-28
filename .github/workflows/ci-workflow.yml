@@ -58,13 +58,13 @@ jobs:
           DISPLAY: :1 # IMPORTANT: Set the DISPLAY environment variable
         run: mvn clean test -DretryType=immediate -DretryCount=1 -DthreadCount=3 -Dparallel=methods
 
-      - name: Copy cached history to results
-        if: always()
-        run: |
-          if [ -d allure-history ]; then
-            mkdir -p target/allure-results/history
-            cp -r allure-history/* target/allure-results/history/
-          fi
+#      - name: Copy cached history to results
+#        if: always()
+#        run: |
+#          if [ -d allure-history ]; then
+#            mkdir -p target/allure-results/history
+#            cp -r allure-history/* target/allure-results/history/
+#          fi
 
       - name: Generate Allure Report with history
         if: always()
@@ -92,6 +92,8 @@ jobs:
       - name: Generate Single File Allure Report as HTML
         if: always()
         run:
+          mkdir -p target/allure-results/history
+          cp -r allure-history/* target/allure-results/history/ || true
           allure generate target/allure-results --single-file --clean -o allure-report
 
       - name: Get Current Date and Time
