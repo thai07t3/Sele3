@@ -91,9 +91,7 @@ jobs:
 
       - name: Generate Single File Allure Report as HTML
         if: always()
-        run: |
-#          mkdir -p target/allure-results/history
-#          cp -r allure-history/* target/allure-results/history/ || true
+        run:
           allure generate target/allure-results --single-file --clean -o allure-report
 
       - name: Get Current Date and Time
