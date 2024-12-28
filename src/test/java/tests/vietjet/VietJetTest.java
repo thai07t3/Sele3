@@ -24,8 +24,8 @@ public class VietJetTest extends BaseTest {
             .flyType(FlyType.RETURN)
             .from(localization.getLocation("ho.chi.minh"))
             .to(localization.getLocation("ha.noi"))
-            .departureDate(currentDate.plusDays(1))
-            .returnDate(currentDate.plusDays(4))
+            .departureDate(currentDate.plusDays(10))
+            .returnDate(currentDate.plusDays(15))
             .numberOfAdult(2)
             .build();
 
