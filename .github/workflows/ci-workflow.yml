@@ -34,33 +34,76 @@ jobs:
             sudo unzip -o allure.zip -d /opt/allure
             sudo ln -s /opt/allure/allure-2.32.0/bin/allure /usr/bin/allure
 
-      - name: Verify Allure Installation
-        run: allure --version
+#      - name: Verify Allure Installation
+#        run: allure --version
+#
+#      - name: Install Xvfb
+#        run: sudo apt-get update && sudo apt-get install -y xvfb
+#
+#      - name: Start Xvfb
+#        run: Xvfb :1 -screen 0 1920x1080x24 &
+#
+#      - name: Set DISPLAY variable
+#        run: export DISPLAY=:1
 
-      - name: Install Xvfb
-        run: sudo apt-get update && sudo apt-get install -y xvfb
-
-      - name: Start Xvfb
-        run: Xvfb :1 -screen 0 1920x1080x24 &
-
-      - name: Set DISPLAY variable
-        run: export DISPLAY=:1
+      - name: Restore Allure history from cache
+        uses: actions/cache@v3
+        id: allure-history-cache
+        with:
+          path: allure-history
+          key: allure-history-cache
 
       - name: Run Maven Tests
-        env:
-          DISPLAY: :1 # IMPORTANT: Set the DISPLAY environment variable
-        run: mvn clean test
+#        env:
+#          DISPLAY: :1 # IMPORTANT: Set the DISPLAY environment variable
+        run: mvn clean test -DretryType=immediate -DretryCount=1 -DthreadCount=3 -Dparallel=methods
+
+      - name: Copy cached history to results
+        if: always()
+        run: |
+          if [ -d allure-history ]; then
+            mkdir -p target/allure-results/history
+            cp -r allure-history/* target/allure-results/history/
+          fi
+
+      - name: Generate Allure Report with history
+        if: always()
+        run: allure generate target/allure-results -o allure-report-cached
+
+      - name: Cache updated Allure history
+        if: always()
+        run: |
+          mkdir -p allure-history
+          cp -r allure-report-cached/history allure-history/
+
+      - name: Prune history to keep latest 20 entries
+        if: always()
+        run: |
+          cd allure-history
+          ls -1t | tail -n +21 | xargs rm -rf || true
+          cd ..
+
+      - name: Save updated history to cache
+        uses: actions/cache@v3
+        with:
+          path: allure-history
+          key: allure-history-cache
+
+      - name: Generate Single File Allure Report
+        if: always()
+        run: |
+          mkdir -p target/allure-results/history
+          cp -r allure-history/* target/allure-results/history/ || true
+          allure generate target/allure-results --single-file --clean -o allure-report
 
       - name: Get Current Date and Time
         if: always()
         id: date
         run: echo "timestamp=$(date '+%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
 
-      - name: Generate Allure Report (HTML)
+      - name: Rename Single File Report
         if: always()
-        run: |
-          allure generate target/allure-results --single-file --clean -o allure-report
-          mv allure-report/index.html allure-report/${{ env.timestamp }}_report_.html
+        run: mv allure-report/index.html allure-report/${{ env.timestamp }}_report.html
 
       - name: Send Email with Allure HTML Report
         if: always()
@@ -80,4 +123,4 @@ jobs:
             <p>Đây là báo cáo kiểm thử tự động từ GitHub Actions.</p>
             <p>Thời gian kiểm thử: <strong>${{ env.timestamp }}</strong></p>
             <p>Vui lòng xem báo cáo HTML đính kèm.</p>
-          attachments: allure-report/${{ env.timestamp }}_report_.html
+          attachments: allure-report/${{ env.timestamp }}_report.html
