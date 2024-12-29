@@ -48,4 +48,4 @@ jobs:
       - name: Run Maven Tests
         env:
           DISPLAY: :1 # IMPORTANT: Set the DISPLAY environment variable
-        run: mvn clean test
+        run: mvn clean test -DretryType=after -DretryCount=0

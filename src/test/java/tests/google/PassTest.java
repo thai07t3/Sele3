@@ -33,13 +33,13 @@ public class PassTest extends BaseTest {
 //        googlePage.searchFor("selenide java");
 //    }
 //
-    @Test(retryAnalyzer = ImmediateRetry.class)
-    public void failedTest_05_set_retry() {
-        open("https://google.com/");
-        googlePage.searchFor("Failed Test 05 - Set ImmediateRetry");
-
-        resultsPage.checkBotStuff1IsVisible();
-    }
+//    @Test(retryAnalyzer = ImmediateRetry.class)
+//    public void failedTest_05_set_retry() {
+//        open("https://google.com/");
+//        googlePage.searchFor("Failed Test 05 - Set ImmediateRetry");
+//
+//        resultsPage.checkBotStuff1IsVisible();
+//    }
 //
 //    @Test
 //    public void passTest_05() {

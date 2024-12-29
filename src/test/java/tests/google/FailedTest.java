@@ -26,13 +26,13 @@ public class FailedTest extends BaseTest {
 //        googlePage.searchFor("selenide java");
 //    }
 
-    @Test(retryAnalyzer = ImmediateRetry.class)
-    public void failedTest_02_set_retry() {
-        open("https://google.com/");
-        googlePage.searchFor("Failed Test 02 - Set ImmediateRetry");
-
-        resultsPage.checkBotStuff1IsVisible();
-    }
+//    @Test(retryAnalyzer = ImmediateRetry.class)
+//    public void failedTest_02_set_retry() {
+//        open("https://google.com/");
+//        googlePage.searchFor("Failed Test 02 - Set ImmediateRetry");
+//
+//        resultsPage.checkBotStuff1IsVisible();
+//    }
 //
 //    @Test
 //    public void passTest_02() {
