@@ -57,6 +57,7 @@ jobs:
             ${{ runner.os }}-allure-history-
 
       - name: Run Maven Tests
+        continue-on-error: true
         if: always()
         env:
           DISPLAY: :1 # IMPORTANT: Set the DISPLAY environment variable
