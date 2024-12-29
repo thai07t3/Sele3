@@ -50,21 +50,21 @@ jobs:
       - name: Set DISPLAY variable
         run: export DISPLAY=:1
 
-      # Restore Allure history from cache
-      - name: Restore Allure history from cache
-        if: always()
-        uses: actions/cache@v4
-        id: allure-history-cache
-        with:
-         path: allure-report-cached/history
-         key: allure-history
-
+#      # Restore Allure history from cache
 #      - name: Restore Allure history from cache
+#        if: always()
 #        uses: actions/cache@v4
 #        id: allure-history-cache
 #        with:
-#          path: allure-history
-#          key: true
+#         path: allure-report-cached/history
+#         key: allure-history
+
+      - name: Restore Allure history from cache
+        id: allure-history-cache
+        uses: actions/cache/restore@v4
+        with:
+          key: ${{ runner.os }}-allure-history
+          path: allure-report-cached/history
 
       - name: Run Maven Tests
         env:
@@ -73,24 +73,31 @@ jobs:
 
       # Copy cached history to target/allure-results (if available)
       - name: Copy cached history to target/allure-results
-        if: always()
+        if: steps.allure-history-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p target/allure-results/history
-          cp -r allure-report-cached/history/* target/allure-results/history/ || true
+          cp -r allure-report-cached/history/* target/allure-results/history/
 
       # Generate a new allure-report-cached with updated history
       - name: Generate new Allure cached report
         if: always()
         run: allure generate target/allure-results -o allure-report-cached
 
-      # Save updated Allure history to cache
+#      # Save updated Allure history to cache
+#      - name: Save updated Allure history to cache
+#        if: always()
+#        uses: actions/cache@v4
+#        with:
+#          path: allure-report-cached/history
+#          key: allure-history
+#          save-always: true
+
       - name: Save updated Allure history to cache
         if: always()
-        uses: actions/cache@v4
+        uses: actions/cache/save@v4
         with:
+          key: ${{ runner.os }}-allure-history
           path: allure-report-cached/history
-          key: allure-history
-          save-always: true
 
       # Generate final single-file HTML report
       - name: Generate final Allure HTML report
