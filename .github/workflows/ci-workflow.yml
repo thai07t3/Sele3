@@ -36,10 +36,8 @@ jobs:
           sudo unzip -o allure.zip -d /opt/allure
           sudo ln -s /opt/allure/allure-2.32.0/bin/allure /usr/bin/allure
 
-      - name: Install GitHub CLI
-        run: sudo apt-get install -y gh
-
-
+#      - name: Install GitHub CLI
+#        run: sudo apt-get install -y gh
 
       - name: Install Xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
@@ -50,21 +48,16 @@ jobs:
       - name: Set DISPLAY variable
         run: export DISPLAY=:1
 
-      - name: Restore Allure history from cache
-        uses: actions/cache/restore@v4
+      - name: Cached Allure history
+        if: always()
+        uses: actions/cache@v4
         with:
-          key: ${{ runner.os }}-allure-history
-          path: allure-history
-
-      - name: Delete old Allure history cache
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api \
-          --method DELETE \
-          -H "Accept: application/vnd.github+json" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          /repos/thai07t3/Sele3/actions/caches?key=${{ runner.os }}-allure-history
+          path: allure-report-cached/history
+          key: ${{ runner.os }}-allure-history-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-allure-history-
+            ${{ runner.os }}-
+          save-always: true
 
       - name: Run Maven Tests
         env:
@@ -76,19 +69,19 @@ jobs:
         if: always()
         run: |
           mkdir -p target/allure-results/history
-          cp -r allure-history/* target/allure-results/history/
+          cp -r allure-report-cached/history/* target/allure-results/history/
 
       # Generate a new allure-report-cached with updated history
       - name: Generate new Allure cached report
         if: always()
         run: allure generate target/allure-results --clean -o allure-report-cached
 
-      - name: Save updated Allure history to cache
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          key: ${{ runner.os }}-allure-history
-          path: allure-report-cached/history
+#      - name: Save updated Allure history to cache
+#        if: always()
+#        uses: actions/cache/save@v4
+#        with:
+#          key: ${{ runner.os }}-allure-history
+#          path: allure-report-cached/history
 
       # Generate final single-file HTML report
       - name: Generate final Allure HTML report
