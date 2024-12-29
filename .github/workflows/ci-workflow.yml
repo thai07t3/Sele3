@@ -73,7 +73,7 @@ jobs:
 
       # Copy cached history to target/allure-results (if available)
       - name: Copy cached history to target/allure-results
-        if: steps.allure-history-cache.outputs.cache-hit = 'true'
+        if: steps.allure-history-cache.outputs.cache-hit == 'true'
         run: |
           mkdir -p target/allure-results/history
           cp -r allure-report-cached/history/* target/allure-results/history/
