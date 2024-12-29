@@ -27,12 +27,19 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+            ${{ runner.os }}-
+          save-always: true
 
       - name: Install Allure CLI
         run: |
             curl -o allure.zip -L https://github.com/allure-framework/allure2/releases/download/2.32.0/allure-2.32.0.zip
             sudo unzip -o allure.zip -d /opt/allure
             sudo ln -s /opt/allure/allure-2.32.0/bin/allure /usr/bin/allure
+
+      - name: Get Current Date and Time
+        if: always()
+        id: date
+        run: echo "timestamp=$(date '+%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
 
       - name: Install Xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
@@ -45,11 +52,12 @@ jobs:
 
       # Restore Allure history from cache
       - name: Restore Allure history from cache
+        if: always()
         uses: actions/cache@v4
         id: allure-history-cache
         with:
          path: allure-report-cached/history
-         key: allure-history-${{ github.ref_name }}
+         key: allure-history
 
 #      - name: Restore Allure history from cache
 #        uses: actions/cache@v4
@@ -81,7 +89,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: allure-report-cached/history
-          key: allure-history-${{ github.ref_name }}
+          key: allure-history
+          save-always: true
 
       # Generate final single-file HTML report
       - name: Generate final Allure HTML report
@@ -118,10 +127,7 @@ jobs:
 #          cp -r allure-history/* target/allure-results/history/ || true
 #          allure generate target/allure-results --single-file --clean -o allure-report
 
-      - name: Get Current Date and Time
-        if: always()
-        id: date
-        run: echo "timestamp=$(date '+%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
+
 
       - name: Rename Single File Report
         if: always()
