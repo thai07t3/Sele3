@@ -13,19 +13,19 @@ public class PassTest extends BaseTest {
     private final GooglePage googlePage = new GooglePage();
     private final ResultPage resultsPage = new ResultPage();
 
-    @Test
-    public void passTest_03() {
-        open("https://google.com/");
-        googlePage.searchFor("selenide java");
-    }
-
 //    @Test
-//    public void failedTest_04_non_set_retry() {
+//    public void passTest_03() {
 //        open("https://google.com/");
-//        googlePage.searchFor("Failed Test 04 - Non Set ImmediateRetry");
-//
-//        resultsPage.checkBotStuff1IsVisible();
+//        googlePage.searchFor("selenide java");
 //    }
+
+    @Test
+    public void failedTest_04_non_set_retry() {
+        open("https://google.com/");
+        googlePage.searchFor("Failed Test 04 - Non Set ImmediateRetry");
+
+        resultsPage.checkBotStuff1IsVisible();
+    }
 
 //    @Test
 //    public void passTest_04() {
