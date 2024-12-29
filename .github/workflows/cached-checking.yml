@@ -25,6 +25,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+            ${{ runner.os }}-
 
       # Kiểm tra xem cache có được khôi phục thành công không
       - name: Check if Maven cache was restored
