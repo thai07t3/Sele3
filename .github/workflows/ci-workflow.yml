@@ -36,6 +36,16 @@ jobs:
             sudo unzip -o allure.zip -d /opt/allure
             sudo ln -s /opt/allure/allure-2.32.0/bin/allure /usr/bin/allure
 
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
+
+      - name: Get Previous Workflow Run ID
+        run: |
+          PREV_RUN_ID=$(gh api \
+            /repos/${{ github.repository }}/actions/runs \
+            --jq '.workflow_runs[1].id')
+          echo "prev_run_id=$PREV_RUN_ID" >> $GITHUB_ENV
+
       - name: Get Current Date and Time
         if: always()
         id: date
@@ -55,7 +65,7 @@ jobs:
         with:
           key: ${{ runner.os }}-allure-history
           restore-keys: |
-            ${{ runner.os }}-allure-history-
+            ${{ runner.os }}-allure-history-${{ github.prev_run_id }}
           path: allure-history
 
       - name: Run Maven Tests
