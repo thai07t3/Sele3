@@ -27,8 +27,6 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-            ${{ runner.os }}-
-          save-always: true
 
       - name: Install Allure CLI
         run: |
@@ -49,6 +47,7 @@ jobs:
         run: export DISPLAY=:1
 
       - name: Cached Allure history
+        continue-on-error: true
         if: always()
         uses: actions/cache@v4
         with:
@@ -56,8 +55,6 @@ jobs:
           key: ${{ runner.os }}-allure-history-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-allure-history-
-            ${{ runner.os }}-
-          save-always: true
 
       - name: Run Maven Tests
         if: always()
@@ -68,6 +65,7 @@ jobs:
       # Copy cached history to target/allure-results
       - name: Copy cached history to target/allure-results
         if: always()
+        continue-on-error: true
         run: |
           mkdir -p target/allure-results/history
           cp -r allure-report-cached/history/* target/allure-results/history/
