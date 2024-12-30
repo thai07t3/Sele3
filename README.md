@@ -8,17 +8,17 @@ Build a framework with Selenide
 |----------------------------------|---------------------------------------------|
 | Selenide FW                      | ✔️                                           |
 | Reports                          | ✔️                                           |
-| Test retry                       |                                            |
+| Test retry                       | ✔️                                           |
 | Parallel/distributed testing     | ✔️                                          |
 | Cross browsers testing           | ✔️                                           |
 | Selenium Grid/Shard              |                                            |
-| CI                               |                                           |
+| CI                               | ✔️                                          |
 | Content testing                  |                                            |
 | Multiple languages testing       | ✔️                                           |
 | Group tests by purposes          |                                            |
 | Source control practice          | ✔️                                           |
 | Switch test environment          |                                            |
-| Wrap custom controls             |                
+| Wrap custom controls             | ✔️               
 
 ## Project Overview
 
