@@ -17,8 +17,8 @@
         <parallel>classes</parallel>
         <threadCount>1</threadCount>
         <language>en</language>
-        <retryType>immediate</retryType>
-        <retryCount>1</retryCount>
+        <retryType>none</retryType>
+        <retryCount>0</retryCount>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -114,8 +114,8 @@
                         <parallel>${parallel}</parallel>
                         <threadCount>${threadCount}</threadCount>
                         <language>${language}</language>
-                        <retryType>{retryType}</retryType>
-                        <retryCount>{retryCount}</retryCount>
+                        <retryType>${retryType}</retryType>
+                        <retryCount>${retryCount}</retryCount>
                     </systemPropertyVariables>
                 </configuration>
                 <dependencies>

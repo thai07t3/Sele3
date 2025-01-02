@@ -5,7 +5,6 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.selenide.AllureSelenide;
-import io.qameta.allure.selenide.LogType;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
@@ -26,8 +25,7 @@ public class BaseTest {
         SelenideLogger.addListener("AllureSelenide",
                 new AllureSelenide()
                         .includeSelenideSteps(true)
-                        .screenshots(true)
-                        .enableLogs(LogType.BROWSER, java.util.logging.Level.INFO));
+                        .screenshots(true));
     }
 
     @AfterMethod(alwaysRun = true)
