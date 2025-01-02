@@ -14,7 +14,7 @@ on:
       retryCount:
         description: 'Retry count (number of retries)'
         required: true
-        default: 1
+        default: 0
       threadCount:
         description: 'Thread count (number of threads)'
         required: true
@@ -28,8 +28,8 @@ on:
           - tests
           - classes
           - methods
-  schedule:
-    - cron: "0 1 * * *"
+#  schedule:
+#    - cron: "0 1 * * *"
 
 jobs:
   run-tests-and-send-report:
