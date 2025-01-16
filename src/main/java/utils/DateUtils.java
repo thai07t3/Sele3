@@ -14,7 +14,7 @@ public class DateUtils {
         String monthAndYear;
         if (localization.getLocale().equals(Languages.VIETNAMESE.getCode())) {
             // Vietnamese: "tháng 12 2024"
-            monthAndYear = String.format("tháng %d %d", date.getMonthValue(), date.getYear());
+            monthAndYear = String.format("tháng %02d %d", date.getMonthValue(), date.getYear());
         } else if (localization.getLocale().equals(Languages.KOREAN.getCode())) {
             // Korean: "12월 2024"
             monthAndYear = String.format("%d월 %d", date.getMonthValue(), date.getYear());

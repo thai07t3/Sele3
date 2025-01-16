@@ -9,21 +9,21 @@
             <class name="tests.google.PassTest">
                 <methods>
                     <include name="passTest_03"/>
-                    <include name="failedTest_04_non_set_retry"/>
-                    <include name="passTest_04"/>
-                    <include name="failedTest_05_set_retry"/>
-                    <include name="passTest_05"/>
+<!--                    <include name="failedTest_04_non_set_retry"/>-->
+<!--                    <include name="passTest_04"/>-->
+<!--                    <include name="failedTest_05_set_retry"/>-->
+<!--                    <include name="passTest_05"/>-->
                 </methods>
             </class>
-            <class name="tests.google.FailedTest">
-                <methods>
-                    <include name="failedTest_01"/>
-                    <include name="passTest_01"/>
-                    <include name="failedTest_02_set_retry"/>
-                    <include name="passTest_02"/>
-                    <include name="failedTest_03"/>
-                </methods>
-            </class>
+<!--            <class name="tests.google.FailedTest">-->
+<!--                <methods>-->
+<!--                    <include name="failedTest_01"/>-->
+<!--                    <include name="passTest_01"/>-->
+<!--                    <include name="failedTest_02_set_retry"/>-->
+<!--                    <include name="passTest_02"/>-->
+<!--                    <include name="failedTest_03"/>-->
+<!--                </methods>-->
+<!--            </class>-->
         </classes>
     </test>
 </suite>

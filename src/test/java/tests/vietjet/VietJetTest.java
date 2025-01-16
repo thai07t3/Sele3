@@ -1,6 +1,7 @@
 package tests.vietjet;
 
 import base.BaseTest;
+import com.codeborne.selenide.Selenide;
 import enums.FlyType;
 import models.Ticket;
 import org.testng.annotations.BeforeMethod;
@@ -24,14 +25,15 @@ public class VietJetTest extends BaseTest {
             .flyType(FlyType.RETURN)
             .from(localization.getLocation("ho.chi.minh"))
             .to(localization.getLocation("ha.noi"))
-            .departureDate(currentDate.plusDays(10))
-            .returnDate(currentDate.plusDays(15))
+            .departureDate(currentDate.plusDays(2))
+            .returnDate(currentDate.plusDays(3))
             .numberOfAdult(2)
             .build();
 
     @BeforeMethod
     public void setUp() {
-        open(System.getProperty("selenide.baseUrl") + language);
+        System.out.println(Constants.URL + language);
+        open(Constants.URL + language);
         homePage.acceptCookiesIfDisplay();
         homePage.clickLaterButtonIfDisplay();
     }

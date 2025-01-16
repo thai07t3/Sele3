@@ -45,6 +45,7 @@ public class SelectFlightPage extends BasePage {
         return flightRows.stream()
                 .map(row -> {
                     String[] parts = row.getDomProperty("outerText").split("\\n");
+                    System.out.println(Arrays.toString(parts));
                     String code = parts[0];
                     LocalTime[] times = parseTimes(parts[1]);
                     String[] flightDetails = parts[2].split("-");
@@ -53,7 +54,9 @@ public class SelectFlightPage extends BasePage {
                     String businessPrice = parsePrice(parts[4]);
                     int priceOffset = businessPrice.equals(localization.getContent("sold.out")) ? 2 : 4;
                     String skyBoosPrice = parsePrice(parts[4 + priceOffset]);
+//                    priceOffset = skyBoosPrice.equals(localization.getContent("sold.out")) ? priceOffset : priceOffset + 2;
                     String deluxePrice = parsePrice(parts[8 + priceOffset]);
+//                    priceOffset = deluxePrice.equals(localization.getContent("sold.out")) ? priceOffset : priceOffset + 2;
                     String ecoPrice = parsePrice(parts[12 + priceOffset]);
 
                     return FlyInfo.builder()
