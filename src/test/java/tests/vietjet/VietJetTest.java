@@ -31,7 +31,7 @@ public class VietJetTest extends BaseTest {
 
     @BeforeMethod
     public void setUp() {
-        open(Constants.URL + language);
+        open(System.getProperty("selenide.baseUrl") + language);
         homePage.acceptCookiesIfDisplay();
         homePage.clickLaterButtonIfDisplay();
     }
