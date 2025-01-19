@@ -2,7 +2,7 @@ package enums;
 
 import lombok.Getter;
 
-import static base.BasePage.localization;
+import static pages.BasePage.localization;
 
 @Getter
 public enum FlyType {

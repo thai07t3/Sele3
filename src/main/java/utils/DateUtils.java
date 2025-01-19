@@ -6,7 +6,7 @@ import java.time.*;
 import java.time.format.TextStyle;
 import java.util.*;
 
-import static base.BasePage.localization;
+import static pages.BasePage.localization;
 
 public class DateUtils {
 

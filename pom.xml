@@ -15,7 +15,7 @@
         <suiteXmlFile>src/test/resources/vietjetTest.xml</suiteXmlFile>
         <parallel>classes</parallel>
         <threadCount>1</threadCount>
-        <language>ko</language>
+        <language>en</language>
         <retryType>none</retryType>
         <retryCount>0</retryCount>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

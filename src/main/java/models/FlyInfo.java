@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.time.LocalTime;
 import java.util.List;
 
-import static base.BasePage.localization;
+import static pages.BasePage.localization;
 
 @Getter
 @Setter

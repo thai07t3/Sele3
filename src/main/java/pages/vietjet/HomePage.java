@@ -1,6 +1,6 @@
 package pages.vietjet;
 
-import base.BasePage;
+import pages.BasePage;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import enums.AdjustType;
@@ -14,7 +14,6 @@ import utils.DateUtils;
 import utils.EnumUtils;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import static com.codeborne.selenide.Selectors.*;

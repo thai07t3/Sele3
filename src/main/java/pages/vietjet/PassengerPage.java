@@ -1,6 +1,6 @@
 package pages.vietjet;
 
-import base.BasePage;
+import pages.BasePage;
 import com.codeborne.selenide.Condition;
 import enums.FlyType;
 import io.qameta.allure.Step;

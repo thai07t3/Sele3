@@ -1,19 +1,18 @@
 package tests.vietjet;
 
-import base.BaseTest;
-import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.Configuration;
+import tests.BaseTest;
 import enums.FlyType;
 import models.Ticket;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.vietjet.PassengerPage;
 import pages.vietjet.SelectFlightPage;
-import utils.Constants;
 import pages.vietjet.HomePage;
 
 import java.time.LocalDate;
 
-import static base.BasePage.localization;
+import static pages.BasePage.localization;
 import static com.codeborne.selenide.Selenide.open;
 
 public class VietJetTest extends BaseTest {
@@ -25,20 +24,20 @@ public class VietJetTest extends BaseTest {
             .flyType(FlyType.RETURN)
             .from(localization.getLocation("ho.chi.minh"))
             .to(localization.getLocation("ha.noi"))
-            .departureDate(currentDate.plusDays(2))
-            .returnDate(currentDate.plusDays(3))
+            .departureDate(currentDate.plusDays(1))
+            .returnDate(currentDate.plusDays(4))
             .numberOfAdult(2)
             .build();
 
     @BeforeMethod
     public void setUp() {
-        System.out.println(Constants.URL + language);
-        open(Constants.URL + language);
+        System.out.println(Configuration.baseUrl + language);
+        open(Configuration.baseUrl + language);
         homePage.acceptCookiesIfDisplay();
         homePage.clickLaterButtonIfDisplay();
     }
 
-    @Test
+    @Test(description = "Search for a flight", groups = {"smoke", "regression"})
     public void TC_01() {
         homePage.fillTicketInformation(ticket);
         homePage.shouldTicketSelectionFormBeDisplayed(ticket);
