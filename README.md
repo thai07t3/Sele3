@@ -52,21 +52,21 @@ and the default TestNG reporting mechanisms.
 
 ## Install dependencies
 
-    ```shell
-    mvn clean install
-    ```
+  ```shell
+  mvn clean install
+  ```
 
 ## Run tests
 
-    ```shell
-    mvn clean test
-    ```
+  ```shell
+  mvn clean test
+  ```
 
 or with full parameters
 
-    ```shell
-    mvn clean test "-Dselenide.browser=<browserName>" "-DsuiteXmlFile=<path to testng.xml>" -Dlanguage=<language> -DretryType=<retryType> -DretryCount=<retryNumber> -Dparallel=<type> -DthreadCount=<number>
-    ```
+  ```shell
+  mvn clean test "-Dselenide.browser=<browserName>" "-DsuiteXmlFile=<path to testng.xml>" -Dlanguage=<language> -DretryType=<retryType> -DretryCount=<retryNumber> -Dparallel=<type> -DthreadCount=<number>
+  ```
 
 **Notes**:
 
@@ -80,6 +80,6 @@ or with full parameters
 
 ## Generate Allure report
 
-    ```shell 
-    allure serve target/allure-results
-    ```
+  ```shell
+  allure serve target/allure-results
+  ```
