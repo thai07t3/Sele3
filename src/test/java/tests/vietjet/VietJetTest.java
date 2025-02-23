@@ -1,6 +1,7 @@
 package tests.vietjet;
 
 import com.codeborne.selenide.Configuration;
+import org.testng.annotations.BeforeClass;
 import tests.BaseTest;
 import enums.FlyType;
 import models.Ticket;
@@ -11,23 +12,35 @@ import pages.vietjet.SelectFlightPage;
 import pages.vietjet.HomePage;
 
 import java.time.LocalDate;
+import java.util.ResourceBundle;
 
-import static pages.BasePage.localization;
 import static com.codeborne.selenide.Selenide.open;
+import static utils.LocaleManager.getLocaleBundle;
 
 public class VietJetTest extends BaseTest {
-    LocalDate currentDate = LocalDate.now();
-    HomePage homePage = new HomePage();
-    SelectFlightPage selectFlightPage = new SelectFlightPage();
-    PassengerPage passengerPage = new PassengerPage();
-    Ticket ticket = Ticket.builder()
-            .flyType(FlyType.RETURN)
-            .from(localization.getLocation("ho.chi.minh"))
-            .to(localization.getLocation("ha.noi"))
-            .departureDate(currentDate.plusDays(1))
-            .returnDate(currentDate.plusDays(4))
-            .numberOfAdult(2)
-            .build();
+    private ResourceBundle bundle;
+    private Ticket ticket;
+    private HomePage homePage;
+    private SelectFlightPage selectFlightPage;
+    private PassengerPage passengerPage;
+    private LocalDate currentDate;
+
+    @BeforeClass
+    public void initTest() {
+        bundle = getLocaleBundle();
+        currentDate = LocalDate.now();
+        homePage = new HomePage();
+        selectFlightPage = new SelectFlightPage();
+        passengerPage = new PassengerPage();
+        ticket = Ticket.builder()
+                .flyType(FlyType.RETURN)
+                .from(bundle.getString("ho.chi.minh"))
+                .to(bundle.getString("ha.noi"))
+                .departureDate(currentDate.plusDays(1))
+                .returnDate(currentDate.plusDays(4))
+                .numberOfAdult(2)
+                .build();
+    }
 
     @BeforeMethod
     public void setUp() {
@@ -42,7 +55,7 @@ public class VietJetTest extends BaseTest {
         homePage.fillTicketInformation(ticket);
         homePage.shouldTicketSelectionFormBeDisplayed(ticket);
 
-        homePage.clickOn(localization.getContent("search.button"));
+        homePage.clickOn(bundle.getString("search.button"));
 
         selectFlightPage.closePopUp();
         selectFlightPage.selectCheapestFlies(ticket.getFlyType());

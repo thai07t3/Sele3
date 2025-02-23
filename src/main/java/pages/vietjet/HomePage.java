@@ -1,5 +1,6 @@
 package pages.vietjet;
 
+import org.jetbrains.annotations.NotNull;
 import pages.BasePage;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
@@ -15,11 +16,14 @@ import utils.EnumUtils;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
+import static utils.LocaleManager.getLocaleBundle;
 
 public class HomePage extends BasePage {
+    ResourceBundle bundle = getLocaleBundle();
 
     private final SelenideElement acceptButton = $x(
             "//div[@id='popup-dialog-description']//following-sibling::div/button"
@@ -27,13 +31,13 @@ public class HomePage extends BasePage {
     private final SelenideElement iframe = $(byId("preview-notification-frame"));
     private final SelenideElement fromInput = $x(
             "//label[contains(text(),'"
-                    + localization.getContent("from")
+                    + bundle.getString("from")
                     + "')]/following-sibling::div//input");
     private final SelenideElement toInput = $x("//input[@id='arrivalPlaceDesktop']");
     private final SelenideElement departureDateButton = $x(
-            "//p[text()='" + localization.getContent("departureDate") + "']");
+            "//p[text()='" + bundle.getString("departureDate") + "']");
     private final SelenideElement returnDateButton = $x(
-            "//p[text()='" + localization.getContent("returnDate") + "']");
+            "//p[text()='" + bundle.getString("returnDate") + "']");
     private final SelenideElement baseCustomSelect = $("[id^='input-base-custom']");
     private final String dynamicDateLocator = "//div[text()='%s']/following-sibling::div[@class='rdrDays']//" +
             "button[not(contains(@class, 'rdrDayDisabled'))]//span[text()='%d']";
@@ -94,8 +98,8 @@ public class HomePage extends BasePage {
     }
 
     @Step("Select round trip: {flyType}")
-    public void selectFlyType(FlyType flyType) {
-        $x(String.format("//span[text()='%s']", flyType.getValue())).click();
+    public void selectFlyType(@NotNull FlyType flyType) {
+        $x(String.format("//span[text()= '%s']", flyType.getValue())).click();
     }
 
     @Step
@@ -153,7 +157,7 @@ public class HomePage extends BasePage {
     }
 
     @Step("Select date: {date} that is next friday")
-    public void selectNextFriday(LocalDate date) {
+    public void selectNextFriday(@NotNull LocalDate date) {
         int daysUntilFriday = 5 - date.getDayOfWeek().getValue();
         if (daysUntilFriday < 0) {
             daysUntilFriday += 7;
@@ -177,12 +181,12 @@ public class HomePage extends BasePage {
         }
     }
 
-    private int getQuantity(AgeType ageType) {
+    private int getQuantity(@NotNull AgeType ageType) {
         return Integer.parseInt($x(String.format(currentNumber, ageType.getValue())).getText());
     }
 
     @Step("Should ticket selection form be displayed")
-    public void shouldTicketSelectionFormBeDisplayed(Ticket ticket) {
+    public void shouldTicketSelectionFormBeDisplayed(@NotNull Ticket ticket) {
         Location from = EnumUtils.getByValueOrThrow(Location.class, ticket.getFrom(), "getName");
         Location to = EnumUtils.getByValueOrThrow(Location.class, ticket.getTo(), "getName");
 
