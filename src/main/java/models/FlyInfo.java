@@ -4,11 +4,12 @@ import enums.ClassType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalTime;
 import java.util.List;
 
-import static base.BasePage.localization;
+import static utils.LocaleManager.getBundleString;
 
 @Getter
 @Setter
@@ -28,7 +29,7 @@ public class FlyInfo {
         return getLowestPriceIndex(flyInfos, ClassType.ECO);
     }
 
-    public static int getLowestPriceIndex(List<FlyInfo> flyInfoList, ClassType classType) {
+    public static int getLowestPriceIndex(@NotNull List<FlyInfo> flyInfoList, ClassType classType) {
         int lowestPrice = Integer.MAX_VALUE;
         int lowestPriceIndex = -1;
         for (int i = 0; i < flyInfoList.size(); i++) {
@@ -42,7 +43,7 @@ public class FlyInfo {
         return lowestPriceIndex;
     }
 
-    private static int getPrice(FlyInfo flyInfo, ClassType classType) {
+    private static int getPrice(FlyInfo flyInfo, @NotNull ClassType classType) {
         String price;
         switch (classType) {
             case BUSINESS -> price = flyInfo.getBusinessPrice();
@@ -52,7 +53,7 @@ public class FlyInfo {
             default -> throw new IllegalArgumentException("Invalid class type: " + classType);
         }
 
-        return price.equals(localization.getContent("sold.out"))
+        return price.equals(getBundleString("sold.out"))
                 ? -1
                 : Integer.parseInt(price.replaceAll("[^0-9]", ""));
     }

@@ -1,21 +1,24 @@
 package utils;
 
 import enums.Languages;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.*;
 import java.time.format.TextStyle;
 import java.util.*;
 
-import static base.BasePage.localization;
+import static utils.LocaleManager.getLocaleBundle;
 
 public class DateUtils {
 
-    public static String getMonthAndYear(LocalDate date) {
+
+    public static @NotNull String getMonthAndYear(LocalDate date) {
+        ResourceBundle bundle = getLocaleBundle();
         String monthAndYear;
-        if (localization.getLocale().equals(Languages.VIETNAMESE.getCode())) {
+        if (bundle.getLocale().toString().equals(Languages.VIETNAMESE.getCode())) {
             // Vietnamese: "tháng 12 2024"
-            monthAndYear = String.format("tháng %d %d", date.getMonthValue(), date.getYear());
-        } else if (localization.getLocale().equals(Languages.KOREAN.getCode())) {
+            monthAndYear = String.format("tháng %02d %d", date.getMonthValue(), date.getYear());
+        } else if (bundle.getLocale().toString().equals(Languages.KOREAN.getCode())) {
             // Korean: "12월 2024"
             monthAndYear = String.format("%d월 %d", date.getMonthValue(), date.getYear());
         } else {
@@ -25,7 +28,7 @@ public class DateUtils {
         return monthAndYear;
     }
 
-    public static LocalDate getNext(DayOfWeek dayOfWeek) {
+    public static @NotNull LocalDate getNext(@NotNull DayOfWeek dayOfWeek) {
         LocalDate today = LocalDate.now();
         int daysUntil = dayOfWeek.getValue() - today.getDayOfWeek().getValue();
         if (daysUntil <= 0) {
@@ -34,7 +37,7 @@ public class DateUtils {
         return today.plusDays(daysUntil);
     }
 
-    public static LocalDate getNext(String dayOfWeek) {
+    public static @NotNull LocalDate getNext(@NotNull String dayOfWeek) {
         return getNext(DayOfWeek.valueOf(dayOfWeek.toUpperCase()));
     }
 }

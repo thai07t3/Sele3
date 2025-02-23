@@ -2,18 +2,17 @@ package enums;
 
 import lombok.Getter;
 
-import static base.BasePage.localization;
+import static utils.LocaleManager.getBundleString;
 
 @Getter
 public enum AgeType {
-    ADULT(localization.getContent("adult")),
-    CHILD(localization.getContent("children")),
-    INFANT(localization.getContent("infant"));
+    ADULT(getBundleString("adult")),
+    CHILD(getBundleString("children")),
+    INFANT(getBundleString("infant"));
 
     private final String value;
 
     AgeType(String value) {
         this.value = value;
     }
-
 }

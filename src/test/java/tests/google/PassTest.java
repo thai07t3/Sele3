@@ -1,6 +1,6 @@
 package tests.google;
 
-import base.BaseTest;
+import tests.BaseTest;
 import listener.retry.ImmediateRetry;
 import org.testng.annotations.Test;
 import pages.google.GooglePage;
