@@ -13,7 +13,7 @@ Build a framework with Selenide
 | Cross browsers testing       | ✔️     |
 | Selenium Grid/Shard          |        |
 | CI                           | ✔️     |
-| Content testing              |        |
+| Content testing              | ✔️     |
 | Multiple languages testing   | ✔️     |
 | Group tests by purposes      | ✔️     |
 | Source control practice      | ✔️     |
