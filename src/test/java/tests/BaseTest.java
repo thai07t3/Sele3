@@ -7,7 +7,7 @@ import org.testng.annotations.Parameters;
 import utils.LocaleManager;
 
 public class BaseTest {
-    public static String language;
+    public String language;
 
     @BeforeClass
     public void beforeClass() {
@@ -20,7 +20,7 @@ public class BaseTest {
     @Parameters("language")
     @BeforeClass
     public void setLanguage(String language) {
-        BaseTest.language = language;
+        this.language = language;
         LocaleManager.setLocale(language);
     }
 }
