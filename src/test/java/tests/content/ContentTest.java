@@ -8,11 +8,9 @@ import tests.BaseTest;
 import utils.Constants;
 
 import java.io.IOException;
-
 import java.util.List;
 
 import static helpers.ExelHelper.readExcelToProduct;
-import static org.testng.Assert.assertTrue;
 
 public class ContentTest extends BaseTest {
     LeapFrog leapFrog = new LeapFrog();
@@ -29,7 +27,6 @@ public class ContentTest extends BaseTest {
         List<Product> excelProducts = readExcelToProduct(Constants.LEAPFROG_EXEL_PATH);
 
         // 4. Validate data
-        boolean result = leapFrog.validateData(htmlProducts, excelProducts);
-        assertTrue(result);
+        leapFrog.shouldDataBeValidated(htmlProducts, excelProducts);
     }
 }

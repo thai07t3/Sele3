@@ -1,5 +1,7 @@
 package pages.content;
 
+import helpers.AllureHelper;
+import io.qameta.allure.Step;
 import models.Product;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,13 +14,13 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static org.testng.Assert.assertTrue;
 
 public class LeapFrog extends BasePage {
 
+    @Step("Download HTML from website")
     public String downloadHtml(String url) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -28,6 +30,7 @@ public class LeapFrog extends BasePage {
         return response.body();
     }
 
+    @Step("Parse HTML to get data of products")
     public List<Product> parseHtml(String html) {
         List<Product> products = new ArrayList<>();
         Document doc = Jsoup.parse(html);
@@ -52,11 +55,17 @@ public class LeapFrog extends BasePage {
                             normalizeAge(htmlProduct.age).equals(normalizeAge(excelProduct.age)) &&
                             normalizePrice(htmlProduct.price) == normalizePrice(excelProduct.price));
 
-            System.out.println((isMatch ? "✓" : "✗") + " " + excelProduct.title +
-                    " - " + excelProduct.age + " - " + excelProduct.price);
+            String message = (isMatch ? "✓" : "✗") + " " + excelProduct.title +
+                    " - " + excelProduct.age + " - " + excelProduct.price;
+            AllureHelper.logStep(message, isMatch);
             results.add(isMatch);
         }
         return !results.contains(false);
+    }
+
+    @Step("Should data be displayed correctly")
+    public void shouldDataBeValidated(List<Product> htmlProducts, List<Product> excelProducts) {
+        assertTrue(validateData(htmlProducts, excelProducts));
     }
 
     private String normalizeTitle(String title) {
