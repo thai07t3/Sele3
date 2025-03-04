@@ -1,4 +1,4 @@
-package models;
+package models.vietjet;
 
 import enums.ClassType;
 import lombok.Builder;

@@ -2,7 +2,7 @@ package pages.content;
 
 import helpers.AllureHelper;
 import io.qameta.allure.Step;
-import models.Product;
+import models.content.Product;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

@@ -1,9 +1,12 @@
 package tests.agoda;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.Selenide;
+import models.agoda.Travel;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.agoda.AgodaHomePage;
+import pages.agoda.AgodaResultPage;
 import tests.BaseTest;
 import utils.DateUtils;
 
@@ -13,26 +16,29 @@ import static com.codeborne.selenide.Selenide.open;
 
 public class AgodaTest extends BaseTest {
     private AgodaHomePage agodaHomePage = new AgodaHomePage();
-    private LocalDate startDate = DateUtils.getNext("friday");
-    private LocalDate endDate = startDate.plusDays(3);
-    private int numberOfRooms = 2;
-    private int numberOfAdults = 4;
-    private int numberOfChildren = 5;
+    private LocalDate expectedDate = DateUtils.getNext("friday");
+    private AgodaResultPage agodaResultPage = new AgodaResultPage();
+    private Travel travel = Travel.builder()
+            .destination("Da Nang")
+            .startDate(expectedDate)
+            .endDate(expectedDate.plusDays(3))
+            .numberOfRooms(2)
+            .numberOfAdults(4)
+            .build();
 
     @BeforeMethod
     public void setUp() {
-        System.out.println(Configuration.baseUrl);
         open(Configuration.baseUrl);
+        agodaHomePage.setLanguageIfNot(language);
     }
 
     @Test(description = "Search for a flight", groups = {"smoke", "regression"})
     public void TC_01() {
-        agodaHomePage.selectSearchInformation("Da Nang");
-        agodaHomePage.selectDateRange(startDate, endDate);
-        agodaHomePage.adjustRoomQuantity(numberOfRooms);
-        agodaHomePage.adjustAdultQuantity(numberOfAdults);
-        agodaHomePage.adjustChildQuantity(numberOfChildren);
-
-
+        agodaHomePage.fillTravelInformation(travel);
+        agodaHomePage.clickSearchButton();
+        Selenide.switchTo().window(1); // Switch to the new tab
+        agodaResultPage.shouldTicketSelectionFormBeDisplayed(travel);
+        agodaResultPage.clickSortLowestPrice();
+        //TODO
     }
 }

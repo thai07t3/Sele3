@@ -2,19 +2,22 @@ package pages.agoda;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
-import pages.BasePage;
+import models.agoda.Travel;
 import utils.Constants;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.function.IntSupplier;
 
+import static com.codeborne.selenide.Condition.clickable;
 import static com.codeborne.selenide.Selenide.$;
 
-public class AgodaHomePage extends BasePage {
+public class AgodaHomePage extends AgodaBasePage {
     private final SelenideElement selectedLanguage = $("[data-selenium='language-container-selected-language']");
-    private final SelenideElement inputSearch = $("[data-selenium='textInput']");
     private final String dynamicDateLocator = "[data-selenium-date='%s']";
+    private final SelenideElement occupancyBox = $("[data-element-name='occupancy-box']");
+    private final SelenideElement searchButton = $("[data-selenium='searchButton']");
 
     @Step("Get selected language")
     public String getSelectedLanguage() {
@@ -25,6 +28,13 @@ public class AgodaHomePage extends BasePage {
     public void setSelectedLanguage(String language) {
         selectedLanguage.click();
         $("[lang='" + language + "']").click();
+    }
+
+    @Step("Set language if it is not {language}")
+    public void setLanguageIfNot(String language) {
+        if (!getSelectedLanguage().contains(language)) {
+            setSelectedLanguage(language);
+        }
     }
 
     @Step("Fill search information")
@@ -41,7 +51,7 @@ public class AgodaHomePage extends BasePage {
     @Step("Select date")
     public void selectDate(LocalDate date) {
         $(String.format(dynamicDateLocator,
-                date.format(DateTimeFormatter.ofPattern(Constants.AGODA_DATE_FORMAT))
+                date.format(DateTimeFormatter.ofPattern(Constants.AGODA_DATE_FORMAT_1))
         )).click();
     }
 
@@ -106,5 +116,39 @@ public class AgodaHomePage extends BasePage {
     @Step("Adjust child quantity")
     public void adjustChildQuantity(int expectedNumber) {
         adjustQuantity(this::getChildQuantity, "[data-selenium='occupancyChildren']", expectedNumber, Constants.MAX_QUANTITY);
+    }
+
+    @Step("Fill travel information")
+    public void fillTravelInformation(Travel travel) {
+        if (Objects.nonNull(travel)) {
+            if (Objects.nonNull(travel.getDestination())) {
+                selectSearchInformation(travel.getDestination());
+            }
+            if (Objects.nonNull(travel.getStartDate()) && Objects.nonNull(travel.getEndDate())) {
+                selectDateRange(travel.getStartDate(), travel.getEndDate());
+            }
+            if (Objects.nonNull(travel.getNumberOfRooms())) {
+                adjustRoomQuantity(travel.getNumberOfRooms());
+            }
+            if (Objects.nonNull(travel.getNumberOfAdults())) {
+                adjustAdultQuantity(travel.getNumberOfAdults());
+            }
+            if (Objects.nonNull(travel.getNumberOfChildren())) {
+                adjustChildQuantity(travel.getNumberOfChildren());
+            }
+        }
+    }
+
+    @Step("Close occupancy box")
+    public void closeOccupancyBox() {
+        occupancyBox.click();
+    }
+
+    @Step("Click search button")
+    public void clickSearchButton() {
+        if (!searchButton.is(clickable)) {
+            closeOccupancyBox();
+        }
+        searchButton.click();
     }
 }

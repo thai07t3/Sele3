@@ -4,7 +4,7 @@ import com.codeborne.selenide.Configuration;
 import org.testng.annotations.BeforeClass;
 import tests.BaseTest;
 import enums.FlyType;
-import models.Ticket;
+import models.vietjet.Ticket;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.vietjet.PassengerPage;

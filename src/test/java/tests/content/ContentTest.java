@@ -1,7 +1,7 @@
 package tests.content;
 
 import com.codeborne.selenide.Configuration;
-import models.Product;
+import models.content.Product;
 import org.testng.annotations.Test;
 import pages.content.LeapFrog;
 import tests.BaseTest;
