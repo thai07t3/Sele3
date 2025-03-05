@@ -15,17 +15,11 @@ public class AgodaResultPage extends AgodaBasePage {
     private final SelenideElement rooms = $("[data-selenium='roomValue']");
     private final SelenideElement adults = $("[data-selenium='adultValue']");
     private final SelenideElement children = $("[data-selenium='childValue']");
-    private final SelenideElement lowestPrice = $("[data-element-name='search-sort-price']");
-
-    @Step("Click on the sort lowest price")
-    public void clickSortLowestPrice() {
-        lowestPrice.click();
-    }
-
-    @Step("Get searched text")
-    public String getSearchedText() {
-        return inputSearch.getText();
-    }
+    private final SelenideElement sortRecommended = $("[data-selenium='search-sort-recommended']");
+    private final SelenideElement sortLowestPrice = $("[data-element-name='search-sort-price']");
+    private final SelenideElement sortDistance = $("[data-element-name='search-sort-distance-landmark']");
+    private final SelenideElement sortRating = $("[data-element-name='search-sort-guest-rating']");
+    private final SelenideElement sortHotDeal = $("[data-element-name='search-sort-secret-deals']");
 
     @Step("Should ticket selection form be displayed")
     public void shouldTicketSelectionFormBeDisplayed(Travel travel) {
@@ -50,4 +44,35 @@ public class AgodaResultPage extends AgodaBasePage {
             }
         }
     }
+
+    @Step("Click on the recommended")
+    public void clickRecommended() {
+        sortRecommended.click();
+    }
+
+    @Step("Click on the sort lowest price")
+    public void clickSortLowestPrice() {
+        sortLowestPrice.click();
+    }
+
+    @Step("Click on the sort distance")
+    public void clickSortDistance() {
+        sortDistance.click();
+    }
+
+    @Step("Click on the sort rating")
+    public void clickSortRating() {
+        sortRating.click();
+    }
+
+    @Step("Click on the sort hot deal")
+    public void clickSortHotDeal() {
+        sortHotDeal.click();
+    }
+
+    @Step("Get searched text")
+    public String getSearchedText() {
+        return inputSearch.getText();
+    }
+
 }

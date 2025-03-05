@@ -21,7 +21,7 @@ public class AgodaTest extends BaseTest {
     private Travel travel = Travel.builder()
             .destination("Da Nang")
             .startDate(expectedDate)
-            .endDate(expectedDate.plusDays(3))
+            .endDate(expectedDate.plusDays(10))
             .numberOfRooms(2)
             .numberOfAdults(4)
             .build();
@@ -39,6 +39,7 @@ public class AgodaTest extends BaseTest {
         Selenide.switchTo().window(1); // Switch to the new tab
         agodaResultPage.shouldTicketSelectionFormBeDisplayed(travel);
         agodaResultPage.clickSortLowestPrice();
-        //TODO
+        //TODO:- 5 first hotels are sorted with the right order.
+        //TODO:-The hotel destination is still correct 
     }
 }
