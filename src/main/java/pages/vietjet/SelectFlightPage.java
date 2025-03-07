@@ -9,7 +9,7 @@ import enums.ClassType;
 import enums.FlyType;
 import enums.Languages;
 import io.qameta.allure.Step;
-import models.FlyInfo;
+import models.vietjet.FlyInfo;
 
 import java.time.LocalTime;
 import java.util.Arrays;

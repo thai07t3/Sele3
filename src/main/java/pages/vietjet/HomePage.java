@@ -9,7 +9,7 @@ import enums.AgeType;
 import enums.FlyType;
 import enums.Location;
 import io.qameta.allure.Step;
-import models.Ticket;
+import models.vietjet.Ticket;
 import utils.Constants;
 import utils.DateUtils;
 import utils.EnumUtils;

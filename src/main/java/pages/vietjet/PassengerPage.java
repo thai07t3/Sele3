@@ -5,7 +5,7 @@ import pages.BasePage;
 import com.codeborne.selenide.Condition;
 import enums.FlyType;
 import io.qameta.allure.Step;
-import models.Ticket;
+import models.vietjet.Ticket;
 
 import java.util.ResourceBundle;
 
