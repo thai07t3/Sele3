@@ -10,6 +10,8 @@ import lombok.Setter;
 public class RoomInfo {
     private String name;
     private String address;
-    private int price;
-    private float rating;
+    private Boolean isAvailable;
+    private Integer price;
+    private Float rating;
+    private Float score;
 }
