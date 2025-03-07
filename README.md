@@ -11,7 +11,7 @@ Build a framework with Selenide
 | Test retry                   | ✔️     |
 | Parallel/distributed testing | ✔️     |
 | Cross browsers testing       | ✔️     |
-| Selenium Grid/Shard          |        |
+| Selenium Grid/Shard          | ✔️     |
 | CI                           | ✔️     |
 | Content testing              | ✔️     |
 | Multiple languages testing   | ✔️     |
