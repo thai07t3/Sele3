@@ -4,21 +4,24 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.JavascriptExecutor;
 
+import static com.codeborne.selenide.Selenide.executeJavaScript;
+import static utils.Constants.DEFAULT_TIMEOUT;
+
 public class PageUtils {
 
-    // Chờ jQuery không còn hoạt động
+    // Wait for jQuery to be inactive
     public static void waitForJQuery() {
         if (isJQueryDefined()) {
             Selenide.Wait().until(driver -> (Boolean) Selenide.executeJavaScript("return jQuery.active === 0"));
         }
     }
 
-    // Chờ trạng thái tài liệu là "complete"
+    // Wait for the document to be "complete"
     public static void waitForPageLoad() {
         Selenide.Wait().until(driver -> "complete".equals(Selenide.executeJavaScript("return document.readyState")));
     }
 
-    // Chờ tất cả các yêu cầu AJAX hoàn thành
+    // Wait for all AJAX requests to complete
     public static void waitForAjax() {
         if (isJQueryDefined()) {
             Selenide.Wait().until(driver -> (Boolean) Selenide.executeJavaScript("return jQuery.active === 0"));
@@ -27,7 +30,7 @@ public class PageUtils {
         }
     }
 
-    // Kiểm tra nếu jQuery được định nghĩa trên trang
+    // Check if jQuery is defined on the page
     private static boolean isJQueryDefined() {
         try {
             return Boolean.TRUE.equals(Selenide.executeJavaScript("return typeof jQuery !== 'undefined'"));
@@ -36,7 +39,7 @@ public class PageUtils {
         }
     }
 
-    // Chờ tất cả các yêu cầu fetch (bao gồm cả fetch API)
+    // Wait for all fetch requests (including fetch API)
     public static void waitForFetchRequests() {
         Selenide.Wait().until(driver -> {
             JavascriptExecutor jsExecutor = (JavascriptExecutor) WebDriverRunner.getWebDriver();
@@ -46,7 +49,7 @@ public class PageUtils {
         });
     }
 
-    // Chờ trạng thái của một phần tử cụ thể (nếu cần)
+    // Wait for the visibility of an element
     public static void waitForElementVisibility(String cssSelector) {
         Selenide.Wait().until(driver -> {
             JavascriptExecutor jsExecutor = (JavascriptExecutor) WebDriverRunner.getWebDriver();
@@ -57,15 +60,15 @@ public class PageUtils {
         });
     }
 
-    // Chờ tổng hợp các điều kiện để đảm bảo trang tải hoàn toàn
+    // Wait for all conditions to ensure the page is fully loaded
     public static void waitForPageFullyLoaded() {
         waitForPageLoad();
         waitForJQuery();
-        waitForAjax();
+        waitForAjaxComplete();
         waitForJavaScript();
     }
 
-    // Chờ JavaScript chạy xong
+    // Wait for JavaScript to be inactive
     public static void waitForJavaScript() {
         Selenide.Wait().until(driver -> {
             JavascriptExecutor jsExecutor = (JavascriptExecutor) WebDriverRunner.getWebDriver();
@@ -73,5 +76,23 @@ public class PageUtils {
                     "return window.activeJavaScriptExecutions ? window.activeJavaScriptExecutions === 0 : true;"
             );
         });
+    }
+
+    // Check if jQuery is active
+    public static boolean isJQueryActive() {
+        try {
+            return (Boolean) executeJavaScript("return typeof jQuery !== 'undefined'");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // Wait for all AJAX requests to complete
+    public static void waitForAjaxComplete() {
+        if (isJQueryActive()) {
+            Selenide.Wait()
+                    .withTimeout(DEFAULT_TIMEOUT)
+                    .until(d -> (Long) executeJavaScript("return jQuery.active") == 0);
+        }
     }
 }

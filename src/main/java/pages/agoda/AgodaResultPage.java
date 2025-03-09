@@ -2,23 +2,31 @@ package pages.agoda;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
-import enums.PropertyType;
-import enums.SortType;
+import enums.Sort;
+import enums.agoda.PropertyType;
+import enums.agoda.SortType;
 import io.qameta.allure.Step;
 import models.agoda.RoomInfo;
 import models.agoda.Travel;
-import org.openqa.selenium.By;
-import utils.PageUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.testng.Assert;
+import utils.SortUtils;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
+import static utils.Constants.DEFAULT_TIMEOUT;
+import static utils.Constants.RATING_PATTERN;
 
 public class AgodaResultPage extends AgodaBasePage {
     private final SelenideElement checkInBox = $("[data-selenium='checkInBox']");
@@ -35,22 +43,22 @@ public class AgodaResultPage extends AgodaBasePage {
     public void shouldTicketSelectionFormBeDisplayed(Travel travel) {
         if (Objects.nonNull(travel)) {
             if (Objects.nonNull(travel.getDestination())) {
-                inputSearch.shouldHave(Condition.text(travel.getDestination()));
+                inputSearch.shouldHave(text(travel.getDestination()));
             }
             if (Objects.nonNull(travel.getStartDate())) {
-                checkInBox.shouldHave((Condition.text(travel.getStartDateAsString())));
+                checkInBox.shouldHave((text(travel.getStartDateAsString())));
             }
             if (Objects.nonNull(travel.getEndDate())) {
-                checkOutBox.shouldHave((Condition.text(travel.getEndDateAsString())));
+                checkOutBox.shouldHave((text(travel.getEndDateAsString())));
             }
             if (Objects.nonNull(travel.getNumberOfRooms())) {
-                rooms.shouldBe(Condition.text(travel.getNumberOfRooms().toString()));
+                rooms.shouldBe(text(travel.getNumberOfRooms().toString()));
             }
             if (Objects.nonNull(travel.getNumberOfAdults())) {
-                adults.shouldBe(Condition.text(travel.getNumberOfAdults().toString()));
+                adults.shouldBe(text(travel.getNumberOfAdults().toString()));
             }
             if (Objects.nonNull(travel.getNumberOfChildren())) {
-                children.shouldBe(Condition.text(travel.getNumberOfChildren().toString()));
+                children.shouldBe(text(travel.getNumberOfChildren().toString()));
             }
         }
     }
@@ -86,129 +94,246 @@ public class AgodaResultPage extends AgodaBasePage {
     }
 
     @Step("Sort hotels by {propertyType} - {sortType}")
-    public void sortBy(PropertyType propertyType, SortType sortType) throws InterruptedException {
-        for (SelenideElement filterOption : filterOptions) {
-            if (filterOption.getText().equalsIgnoreCase(propertyType.getValue())) {
-                filterOption.click();
-                break;
-            }
-        }
-        Thread.sleep(5000);
-        PageUtils.waitForPageFullyLoaded();
+    public void sortBy(PropertyType propertyType, SortType sortType) {
+        waitForInitialLoad();
+
+        applyPropertyFilter(propertyType);
+        applySorting(sortType);
+
+        waitForResultsStabilization();
+    }
+
+    private void applyPropertyFilter(PropertyType propertyType) {
+        filterOptions.findBy(text(propertyType.getValue()))
+                .scrollIntoView("{behavior: 'instant', block: 'center'}")
+                .shouldBe(visible, DEFAULT_TIMEOUT)
+                .click();
+
+        verifyHotelListLoaded();
+    }
+
+    private void applySorting(SortType sortType) {
         switch (sortType) {
-            case RECOMMENDED:
-                clickRecommended();
-                break;
-            case LOWEST_PRICE:
-                clickSortLowestPrice();
-                PageUtils.waitForPageFullyLoaded();
-                break;
-            case DISTANCE:
-                clickSortDistance();
-                break;
-            case RATING:
-                clickSortRating();
-                break;
-            case HOT_DEAL:
-                clickSortHotDeal();
-                break;
+            case RECOMMENDED -> clickAndVerify(this::clickRecommended);
+            case LOWEST_PRICE -> clickAndVerify(this::clickSortLowestPrice);
+            case DISTANCE -> clickAndVerify(this::clickSortDistance);
+            case RATING -> clickAndVerify(this::clickSortRating);
+            case HOT_DEAL -> clickAndVerify(this::clickSortHotDeal);
         }
     }
 
-    @Step("Get {number} first hotels")
+    @Step("Get first {number} hotels")
     public List<RoomInfo> getFirstHotels(int number) {
-        List<RoomInfo> roomInfoList = new ArrayList<>();
+        return $$("li[data-hotelid]")
+                .shouldHave(sizeGreaterThanOrEqual(number), DEFAULT_TIMEOUT)
+                .asDynamicIterable()
+                .stream()
+                .limit(number)
+                .map(this::safeExtractHotelInfo)
+                .collect(Collectors.toList());
+    }
 
-        // Lấy tất cả các phần tử hotel (li có attribute data-hotelid)
-        ElementsCollection hotelElements = $$("li[data-hotelid]");
+    @Step("Should destination be correct")
+    public void shouldDestinationBeCorrect(int number, String destination) {
+        List<RoomInfo> rooms = getFirstHotels(number);
+        for (RoomInfo room : rooms) {
+            Assert.assertTrue(room.getAddress().contains(destination), "The hotel destination is not correct");
+        }
+    }
 
-        // Duyệt qua các phần tử, chỉ lấy số lượng yêu cầu (sử dụng Math.min để tránh vượt quá số phần tử)
-        for (int i = 0; i < Math.min(number, hotelElements.size()); i++) {
-            SelenideElement hotel = hotelElements.get(i).shouldBe(Condition.visible).scrollTo();
+    // This method is used to handle stale element exceptions
+    private RoomInfo safeExtractHotelInfo(SelenideElement hotel) {
+        final int MAX_ATTEMPTS = 3;
+        int attempts = 0;
 
-            // Lấy tên khách sạn từ thẻ <h3 data-selenium="hotel-name">
-            String name = hotel.$("h3[data-selenium='hotel-name']").shouldBe(Condition.visible).getText().trim();
+        // Get identifying information before element gets stale
+        String hotelName = hotel.$("[data-selenium='hotel-name']").text();
+        String hotelAddress = hotel.$("[data-selenium='area-city-text']").text();
 
-            // Lấy địa chỉ từ nút chứa data-selenium="area-city-text" (trong thẻ span)
-            String address = hotel.$("button[data-selenium='area-city-text'] span").shouldBe(Condition.visible).getText().trim();
+        while (attempts < MAX_ATTEMPTS) {
+            try {
+                // Find and scroll to the hotel element
+                SelenideElement freshHotel = findHotelByNameAndAddress(hotelName, hotelAddress)
+                        .scrollIntoView(true)
+                        .shouldBe(visible, Duration.ofSeconds(10));
 
-            // Kiểm tra tính khả dụng: nếu tồn tại phần tử có class chứa "sold-out-message" thì khách sạn không khả dụng
-            boolean isAvailable = !hotel.$(".sold-out-message").exists();
-
-            String priceText = null;
-            if (isAvailable) {
-                // Lấy giá từ phần tử có data-element-name="final-price" (trích xuất text từ span data-selenium="display-price")
-                priceText = hotel.$("div[data-element-name='final-price'] span[data-selenium='display-price']")
-                        .getText();
-                // Loại bỏ ký tự không phải số (ví dụ dấu phẩy, ký hiệu tiền tệ)
-                priceText = priceText.replaceAll("[^\\d]", "");
-
-            }
-            Integer price = null;
-            if (priceText != null) {
-                price = priceText.isEmpty() ? null : Integer.parseInt(priceText);
-            }
-
-            // Lấy rating từ phần tử chứa data-testid="rating-container"
-            float rating = 0.0f;
-            SelenideElement ratingElement = hotel.$("div[data-testid='rating-container']");
-            if (ratingElement.exists()) {
-                String ratingText = ratingElement.getText();
-                Pattern pattern = Pattern.compile("([0-9]+\\.?[0-9]*)");
-                Matcher matcher = pattern.matcher(ratingText);
-                if (matcher.find()) {
-                    rating = Float.parseFloat(matcher.group(1));
+                return extractRoomInfo(freshHotel);
+            } catch (StaleElementReferenceException | NoSuchElementException e) {
+                attempts++;
+                if (attempts >= MAX_ATTEMPTS) {
+                    throw new RuntimeException("Failed to refresh hotel element after " + MAX_ATTEMPTS + " attempts", e);
                 }
+                // Wait before retry
+                sleep(500);
             }
+        }
+        return null;
+    }
 
-            // Sử dụng reviewSection để lấy score
-            SelenideElement reviewSection = hotel.$("div[data-element-name='property-card-review']");
-            Float score = null;
-            if (reviewSection.exists()) {
-                SelenideElement scoreElement = reviewSection.$("span");
-                if (scoreElement.exists()) {
-                    String scoreText = scoreElement.getText().trim(); // ví dụ: "Average rating Review score 5.8 out of 10 with 102 reviews"
-                    Pattern scorePattern = Pattern.compile("Review score\\s*([0-9]+\\.?[0-9]*)");
-                    Matcher scoreMatcher = scorePattern.matcher(scoreText);
-                    if (scoreMatcher.find()) {
-                        score = Float.parseFloat(scoreMatcher.group(1));
-                    }
-                }
-            }
+    private SelenideElement findHotelByNameAndAddress(String name, String address) {
+        return $$("li[data-hotelid]")
+                .filterBy(Condition.and(
+                        "name_and_address",
+                        text(name),
+                        text(address)
+                ))
+                .first()
+                .should(exist, Duration.ofSeconds(5));
+    }
 
+    private RoomInfo extractRoomInfo(SelenideElement hotel) {
+        return RoomInfo.builder()
+                .name(extractName(hotel))
+                .address(extractAddress(hotel))
+                .isAvailable(checkAvailability(hotel))
+                .price(extractPrice(hotel))
+                .rating(extractRating(hotel))
+                .score(extractScore(hotel))
+                .scoreType(extractScoreType(hotel))
+                .build();
+    }
 
-            // Xây dựng đối tượng RoomInfo theo mẫu (giả sử đã có Lombok @Builder)
-            RoomInfo roomInfo = RoomInfo.builder()
-                    .name(name)
-                    .address(address)
-                    .isAvailable(isAvailable)
-                    .price(price)
-                    .rating(rating)
-                    .score(score)
-                    .build();
+    private String extractName(SelenideElement hotel) {
+        return hotel.$("[data-selenium='hotel-name']")
+                .shouldBe(visible, DEFAULT_TIMEOUT)
+                .text()
+                .trim();
+    }
 
-            roomInfoList.add(roomInfo);
+    private String extractAddress(SelenideElement hotel) {
+        return hotel.$("button[data-selenium='area-city-text'] span")
+                .shouldBe(visible)
+                .text()
+                .trim();
+    }
+
+    private boolean checkAvailability(SelenideElement hotel) {
+        return !hotel.$(".sold-out-message").exists();
+    }
+
+    private Integer extractPrice(SelenideElement hotel) {
+        if (!checkAvailability(hotel)) return null;
+
+        try {
+            return Integer.parseInt(
+                    hotel.$("div[data-element-name='final-price'] span[data-selenium='display-price']")
+                            .text()
+                            .replaceAll("[^\\d]", "")
+            );
+        } catch (NumberFormatException e) {
+            System.err.println("Price parsing error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private float extractRating(SelenideElement hotel) {
+        SelenideElement ratingElement = hotel.$("div[data-testid='rating-container']");
+        return ratingElement.exists()
+                ? parseRating(ratingElement.text())
+                : 0f;
+    }
+
+    private Float extractScore(SelenideElement hotel) {
+        Pair<Float, String> reviewInfo = extractReviewInfo(hotel);
+        return reviewInfo.getLeft();
+    }
+
+    private String extractScoreType(SelenideElement hotel) {
+        Pair<Float, String> reviewInfo = extractReviewInfo(hotel);
+        return reviewInfo.getRight();
+    }
+
+    private Pair<Float, String> extractReviewInfo(SelenideElement hotel) {
+        SelenideElement reviewSection = hotel.$("div[data-element-name='property-card-review']");
+        if (!reviewSection.exists()) return Pair.of(null, null);
+
+        SelenideElement ratingContainer = reviewSection.$("p");
+        if (!ratingContainer.exists()) return Pair.of(null, null);
+
+        ElementsCollection ratingSpans = ratingContainer.$$("span");
+        if (ratingSpans.size() < 2) return Pair.of(null, null);
+
+        String scoreText = ratingSpans.get(0).getText().replace(",", ".");
+        Float score = parseFloatSafely(scoreText);
+
+        String scoreType = ratingSpans.get(1).getText().trim();
+
+        return Pair.of(score, scoreType);
+    }
+
+    private float parseRating(String text) {
+        Matcher matcher = RATING_PATTERN.matcher(text);
+        return matcher.find() ? Float.parseFloat(matcher.group()) : 0f;
+    }
+
+    private Float parseFloatSafely(String text) {
+        try {
+            return Float.parseFloat(text.replace(",", "."));
+        } catch (NumberFormatException e) {
+            System.err.println("Float parsing error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    @Step("Should {number} first hotels be sorted with the right order via {attribute}")
+    public void shouldFirstHotelsBeSortedWithTheRightOrder(int number, Sort sortType, String attribute) {
+        List<RoomInfo> rooms = getFirstHotels(number);
+        List<RoomInfo> availableRooms;
+        if ("price".equals(attribute)) {
+            availableRooms = rooms.stream()
+                    .filter(room -> room.getIsAvailable() != null && room.getIsAvailable())
+                    .collect(Collectors.toList());
+        } else {
+            availableRooms = rooms;
         }
 
-        return roomInfoList;
+        List<Comparable> attributeValues = new ArrayList<>();
+        for (RoomInfo room : availableRooms) {
+            Object value = getAttributeValue(room, attribute);
+            if (value instanceof Comparable) {
+                attributeValues.add((Comparable) value);
+            } else {
+                throw new IllegalArgumentException("Attribute " + attribute + " is not comparable");
+            }
+        }
+
+        List<Comparable> filteredValues = attributeValues.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        if (filteredValues.isEmpty()) {
+            throw new AssertionError("No rooms with non-null " + attribute + " after filtering");
+        }
+
+        boolean isSorted;
+        if (sortType == Sort.ASC) {
+            isSorted = SortUtils.isSortedAsc(filteredValues);
+        } else {
+            isSorted = SortUtils.isSortedDesc(filteredValues);
+        }
+
+        Assert.assertTrue(isSorted, "The first " + number + " hotels are not sorted " + sortType + " by " + attribute);
     }
+
+    private Object getAttributeValue(RoomInfo room, String attribute) {
+        switch (attribute) {
+            case "name":
+                return room.getName();
+            case "address":
+                return room.getAddress();
+            case "isAvailable":
+                return room.getIsAvailable();
+            case "price":
+                return room.getPrice();
+            case "rating":
+                return room.getRating();
+            case "score":
+                return room.getScore();
+            case "scoreType":
+                return room.getScoreType();
+            default:
+                throw new IllegalArgumentException("Invalid attribute: " + attribute);
+        }
+    }
+
 }
-//    public List<RoomInfo> getFirstHotels(int number) {
-//        List<RoomInfo> roomInfos = null;
-//        for (int i = 1; i <= number; i++) {
-//            infoHeaders.get(i).scrollTo();
-//            String hotelName = infoHeaders.get(i).$x("//h3").getText();
-//            String address = infoHeaders.get(i).$x("div[@data-selenium='area-city']").getText();
-//            String rating = ratings.get(i).getText();
-//            String finalPrice = finalPrices.get(i).getText();
-//
-//            roomInfos.add(RoomInfo.builder()
-//                    .name(hotelName)
-//                    .address(address)
-//                    .rating(Float.parseFloat(rating))
-//                    .price(Integer.parseInt(finalPrice))
-//                    .build());
-//        }
-//        return roomInfos;
-//    }
-//}

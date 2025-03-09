@@ -14,4 +14,5 @@ public class RoomInfo {
     private Integer price;
     private Float rating;
     private Float score;
+    private String scoreType;
 }

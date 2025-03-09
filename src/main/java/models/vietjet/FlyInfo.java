@@ -1,6 +1,6 @@
 package models.vietjet;
 
-import enums.ClassType;
+import enums.vietject.ClassType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package enums;
+package enums.agoda;
 
 import lombok.Getter;
 

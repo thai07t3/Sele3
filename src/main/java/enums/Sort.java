@@ -3,13 +3,13 @@ package enums;
 import lombok.Getter;
 
 @Getter
-public enum PropertyType {
-    HOTEL("Hotel"),
-    MOTEL("Motel"),;
+public enum Sort {
+    ASC("asc"),
+    DESC("desc");
 
     private final String value;
 
-    PropertyType(String value) {
+    Sort(String value) {
         this.value = value;
     }
 }

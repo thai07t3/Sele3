@@ -1,6 +1,6 @@
 package utils;
 
-import enums.Languages;
+import enums.vietject.Languages;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 

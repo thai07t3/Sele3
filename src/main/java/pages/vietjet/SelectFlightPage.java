@@ -5,9 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import pages.BasePage;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import enums.ClassType;
-import enums.FlyType;
-import enums.Languages;
+import enums.vietject.ClassType;
+import enums.vietject.FlyType;
+import enums.vietject.Languages;
 import io.qameta.allure.Step;
 import models.vietjet.FlyInfo;
 

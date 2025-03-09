@@ -2,9 +2,9 @@ package tests.agoda;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
-import enums.PropertyType;
-import enums.SortType;
-import models.agoda.RoomInfo;
+import enums.Sort;
+import enums.agoda.PropertyType;
+import enums.agoda.SortType;
 import models.agoda.Travel;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -14,7 +14,6 @@ import tests.BaseTest;
 import utils.DateUtils;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static com.codeborne.selenide.Selenide.open;
 
@@ -42,9 +41,9 @@ public class AgodaTest extends BaseTest {
         agodaHomePage.clickSearchButton();
         Selenide.switchTo().window(1); // Switch to the new tab
         agodaResultPage.shouldTicketSelectionFormBeDisplayed(travel);
+        agodaResultPage.shouldDestinationBeCorrect(5, travel.getDestination());
         agodaResultPage.sortBy(PropertyType.HOTEL, SortType.LOWEST_PRICE);
-        List<RoomInfo> roomInfoList = agodaResultPage.getFirstHotels(5);
-        System.out.println(roomInfoList);
-        //TODO:-The hotel destination is still correct
+        agodaResultPage.shouldFirstHotelsBeSortedWithTheRightOrder(5, Sort.ASC, "price");
+        agodaResultPage.shouldDestinationBeCorrect(5, travel.getDestination());
     }
 }

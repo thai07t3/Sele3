@@ -1,6 +1,6 @@
 package models.vietjet;
 
-import enums.FlyType;
+import enums.vietject.FlyType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;

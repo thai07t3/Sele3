@@ -1,4 +1,4 @@
-package enums;
+package enums.vietject;
 
 import lombok.Getter;
 

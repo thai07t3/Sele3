@@ -3,7 +3,7 @@ package pages.vietjet;
 import org.jetbrains.annotations.NotNull;
 import pages.BasePage;
 import com.codeborne.selenide.Condition;
-import enums.FlyType;
+import enums.vietject.FlyType;
 import io.qameta.allure.Step;
 import models.vietjet.Ticket;
 

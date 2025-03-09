@@ -3,7 +3,7 @@ package tests.vietjet;
 import com.codeborne.selenide.Configuration;
 import org.testng.annotations.BeforeClass;
 import tests.BaseTest;
-import enums.FlyType;
+import enums.vietject.FlyType;
 import models.vietjet.Ticket;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
