@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.testng.Assert;
+import utils.PageUtils;
 import utils.SortUtils;
 
 import java.time.Duration;
@@ -135,9 +136,17 @@ public class AgodaResultPage extends AgodaBasePage {
 
     @Step("Should destination be correct")
     public void shouldDestinationBeCorrect(int number, String destination) {
-        List<RoomInfo> rooms = getFirstHotels(number);
-        for (RoomInfo room : rooms) {
-            Assert.assertTrue(room.getAddress().contains(destination), "The hotel destination is not correct");
+        verifyHotelListLoaded();
+        ElementsCollection address = $$("button[data-selenium='area-city-text']");
+        // Scroll to the last address element to ensure all elements are loaded
+        while (address.size() < number) {
+            address.last().scrollIntoView(true);
+            PageUtils.waitForPageFullyLoaded();
+            // Re-fetch the address elements
+            address = $$("button[data-selenium='area-city-text']");
+        }
+        for (int i = 0; i < number; i++) {
+            address.get(i).scrollIntoView(true).shouldHave(text(destination));
         }
     }
 
@@ -164,7 +173,7 @@ public class AgodaResultPage extends AgodaBasePage {
                     throw new RuntimeException("Failed to refresh hotel element after " + MAX_ATTEMPTS + " attempts", e);
                 }
                 // Wait before retry
-                sleep(500);
+                sleep(2000);
             }
         }
         return null;

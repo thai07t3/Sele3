@@ -36,7 +36,7 @@ public class AgodaTest extends BaseTest {
     }
 
     @Test(description = "Search for a flight", groups = {"smoke", "regression"})
-    public void TC_01() throws InterruptedException {
+    public void TC_01() {
         agodaHomePage.fillTravelInformation(travel);
         agodaHomePage.clickSearchButton();
         Selenide.switchTo().window(1); // Switch to the new tab
