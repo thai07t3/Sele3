@@ -125,6 +125,8 @@ public class AgodaHomePage extends AgodaBasePage {
                 selectSearchInformation(travel.getDestination());
             }
             if (Objects.nonNull(travel.getStartDate()) && Objects.nonNull(travel.getEndDate())) {
+//                System.out.println("Start date: " + travel.getStartDate());
+//                System.out.println("End date: " + travel.getEndDate());
                 selectDateRange(travel.getStartDate(), travel.getEndDate());
             }
             if (Objects.nonNull(travel.getNumberOfRooms())) {
