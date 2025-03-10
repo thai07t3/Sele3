@@ -10,8 +10,6 @@ import io.qameta.allure.Step;
 import models.agoda.RoomInfo;
 import models.agoda.Travel;
 import org.apache.commons.lang3.tuple.Pair;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.testng.Assert;
 import utils.PageUtils;
 import utils.SortUtils;
@@ -121,16 +119,27 @@ public class AgodaResultPage extends AgodaBasePage {
             case RATING -> clickAndVerify(this::clickSortRating);
             case HOT_DEAL -> clickAndVerify(this::clickSortHotDeal);
         }
+        verifyHotelListLoaded();
     }
+
+//    @Step("Get first {number} hotels")
+//    public List<RoomInfo> getFirstHotels(int number) {
+//        return $$("li[data-hotelid]")
+//                .shouldHave(sizeGreaterThanOrEqual(number), DEFAULT_TIMEOUT)
+//                .asDynamicIterable()
+//                .stream()
+//                .limit(number)
+//                .map(this::safeExtractHotelInfo)
+//                .collect(Collectors.toList());
+//    }
 
     @Step("Get first {number} hotels")
     public List<RoomInfo> getFirstHotels(int number) {
         return $$("li[data-hotelid]")
                 .shouldHave(sizeGreaterThanOrEqual(number), DEFAULT_TIMEOUT)
-                .asDynamicIterable()
+                .first(number)
                 .stream()
-                .limit(number)
-                .map(this::safeExtractHotelInfo)
+                .map(this::extractRoomInfo)
                 .collect(Collectors.toList());
     }
 
@@ -151,33 +160,33 @@ public class AgodaResultPage extends AgodaBasePage {
     }
 
     // This method is used to handle stale element exceptions
-    private RoomInfo safeExtractHotelInfo(SelenideElement hotel) {
-        final int MAX_ATTEMPTS = 3;
-        int attempts = 0;
-
-        // Get identifying information before element gets stale
-        String hotelName = hotel.$("[data-selenium='hotel-name']").text();
-        String hotelAddress = hotel.$("[data-selenium='area-city-text']").text();
-
-        while (attempts < MAX_ATTEMPTS) {
-            try {
-                // Find and scroll to the hotel element
-                SelenideElement freshHotel = findHotelByNameAndAddress(hotelName, hotelAddress)
-                        .scrollIntoView(true)
-                        .shouldBe(visible, Duration.ofSeconds(10));
-
-                return extractRoomInfo(freshHotel);
-            } catch (StaleElementReferenceException | NoSuchElementException e) {
-                attempts++;
-                if (attempts >= MAX_ATTEMPTS) {
-                    throw new RuntimeException("Failed to refresh hotel element after " + MAX_ATTEMPTS + " attempts", e);
-                }
-                // Wait before retry
-                sleep(2000);
-            }
-        }
-        return null;
-    }
+//    private RoomInfo safeExtractHotelInfo(SelenideElement hotel) {
+//        final int MAX_ATTEMPTS = 3;
+//        int attempts = 0;
+//
+//        // Get identifying information before element gets stale
+//        String hotelName = hotel.$("[data-selenium='hotel-name']").text();
+//        String hotelAddress = hotel.$("[data-selenium='area-city-text']").text();
+//
+//        while (attempts < MAX_ATTEMPTS) {
+//            try {
+//                // Find and scroll to the hotel element
+//                SelenideElement freshHotel = findHotelByNameAndAddress(hotelName, hotelAddress)
+//                        .scrollIntoView(true)
+//                        .shouldBe(visible, Duration.ofSeconds(10));
+//
+//                return extractRoomInfo(freshHotel);
+//            } catch (StaleElementReferenceException | NoSuchElementException e) {
+//                attempts++;
+//                if (attempts >= MAX_ATTEMPTS) {
+//                    throw new RuntimeException("Failed to refresh hotel element after " + MAX_ATTEMPTS + " attempts", e);
+//                }
+//                // Wait before retry
+//                sleep(2000);
+//            }
+//        }
+//        return null;
+//    }
 
     private SelenideElement findHotelByNameAndAddress(String name, String address) {
         return $$("li[data-hotelid]")
@@ -190,9 +199,22 @@ public class AgodaResultPage extends AgodaBasePage {
                 .should(exist, Duration.ofSeconds(5));
     }
 
+//    private RoomInfo extractRoomInfo(SelenideElement hotel) {
+//        return RoomInfo.builder()
+//                .name(extractName(hotel))
+//                .address(extractAddress(hotel))
+//                .isAvailable(checkAvailability(hotel))
+//                .price(extractPrice(hotel))
+//                .rating(extractRating(hotel))
+//                .score(extractScore(hotel))
+//                .scoreType(extractScoreType(hotel))
+//                .build();
+//    }
+
     private RoomInfo extractRoomInfo(SelenideElement hotel) {
+        hotel.scrollIntoView("{behavior: 'auto', block: 'center', inline: 'center'}");
         return RoomInfo.builder()
-                .name(extractName(hotel))
+                .name(extractHotelName(hotel))
                 .address(extractAddress(hotel))
                 .isAvailable(checkAvailability(hotel))
                 .price(extractPrice(hotel))
@@ -202,17 +224,65 @@ public class AgodaResultPage extends AgodaBasePage {
                 .build();
     }
 
-    private String extractName(SelenideElement hotel) {
+//    private String extractName(SelenideElement hotel) {
+//        return hotel.$("[data-selenium='hotel-name']")
+//                .shouldBe(visible, DEFAULT_TIMEOUT)
+//                .text()
+//                .trim();
+//    }
+//
+//    private String extractAddress(SelenideElement hotel) {
+//        return hotel.$("[data-selenium='area-city-text'] span")
+//                .shouldBe(visible)
+//                .text()
+//                .trim();
+//    }
+//
+//    private boolean checkAvailability(SelenideElement hotel) {
+//        return !hotel.$(".sold-out-message").exists();
+//    }
+//
+//    private Integer extractPrice(SelenideElement hotel) {
+//        if (!checkAvailability(hotel)) return null;
+//
+//        try {
+//            return Integer.parseInt(
+//                    hotel.$("[data-element-name='final-price'] [data-selenium='display-price']")
+//                            .text()
+//                            .replaceAll("[^\\d]", "")
+//            );
+//        } catch (NumberFormatException e) {
+//            System.err.println("Price parsing error: " + e.getMessage());
+//            return null;
+//        }
+//    }
+//
+//    private float extractRating(SelenideElement hotel) {
+//        SelenideElement ratingElement = hotel.$("[data-testid='rating-container']");
+//        return ratingElement.exists()
+//                ? parseRating(ratingElement.text())
+//                : 0f;
+//    }
+//
+//    private Float extractScore(SelenideElement hotel) {
+//        Pair<Float, String> reviewInfo = extractReviewInfo(hotel);
+//        return reviewInfo.getLeft();
+//    }
+//
+//    private String extractScoreType(SelenideElement hotel) {
+//        Pair<Float, String> reviewInfo = extractReviewInfo(hotel);
+//        return reviewInfo.getRight();
+//    }
+
+    private String extractHotelName(SelenideElement hotel) {
         return hotel.$("[data-selenium='hotel-name']")
-                .shouldBe(visible, DEFAULT_TIMEOUT)
-                .text()
+                .getText() // Bỏ shouldBe để tăng tốc
                 .trim();
     }
 
     private String extractAddress(SelenideElement hotel) {
-        return hotel.$("button[data-selenium='area-city-text'] span")
-                .shouldBe(visible)
-                .text()
+        return hotel.$("[data-selenium='area-city-text'] span")
+                .getText() // Bỏ shouldBe
                 .trim();
     }
 
@@ -225,50 +295,74 @@ public class AgodaResultPage extends AgodaBasePage {
 
         try {
             return Integer.parseInt(
-                    hotel.$("div[data-element-name='final-price'] span[data-selenium='display-price']")
-                            .text()
+                    hotel.$("[data-element-name='final-price'] [data-selenium='display-price']")
+                            .getText()
                             .replaceAll("[^\\d]", "")
             );
         } catch (NumberFormatException e) {
-            System.err.println("Price parsing error: " + e.getMessage());
             return null;
         }
     }
 
     private float extractRating(SelenideElement hotel) {
-        SelenideElement ratingElement = hotel.$("div[data-testid='rating-container']");
+        SelenideElement ratingElement = hotel.$("[data-testid='rating-container']");
         return ratingElement.exists()
-                ? parseRating(ratingElement.text())
+                ? parseRating(ratingElement.getText())
                 : 0f;
     }
 
+    private Pair<Float, String> extractReviewInfo(SelenideElement hotel) {
+//        SelenideElement reviewSection = hotel.$("div[data-element-name='property-card-review']");
+//        if (!reviewSection.exists()) return Pair.of(null, null);
+//
+//        ElementsCollection spans = reviewSection.$$("span");
+//        if (spans.size() < 2) return Pair.of(null, null);
+
+        SelenideElement reviewSection = hotel.$("[data-element-name='property-card-review']");
+//        if (!reviewSection.exists()) return Pair.of(null, null);
+
+//        SelenideElement ratingContainer = reviewSection.$("p");
+//        if (!ratingContainer.exists()) return Pair.of(null, null);
+
+        ElementsCollection ratingSpans = reviewSection.$("p").$$("span");
+//        if (ratingSpans.size() < 2) return Pair.of(null, null);
+
+//        String scoreText = ratingSpans.get(0).getText().replace(",", ".");
+//        Float score = parseFloatSafely(scoreText);
+//
+//        String scoreType = ratingSpans.get(1).getText().trim();
+
+        return Pair.of(
+                parseFloatSafely(ratingSpans.get(0).getText()),
+                ratingSpans.get(1).getText().trim()
+        );
+    }
+
     private Float extractScore(SelenideElement hotel) {
-        Pair<Float, String> reviewInfo = extractReviewInfo(hotel);
-        return reviewInfo.getLeft();
+        return extractReviewInfo(hotel).getLeft();
     }
 
     private String extractScoreType(SelenideElement hotel) {
-        Pair<Float, String> reviewInfo = extractReviewInfo(hotel);
-        return reviewInfo.getRight();
+        return extractReviewInfo(hotel).getRight();
     }
 
-    private Pair<Float, String> extractReviewInfo(SelenideElement hotel) {
-        SelenideElement reviewSection = hotel.$("div[data-element-name='property-card-review']");
-        if (!reviewSection.exists()) return Pair.of(null, null);
-
-        SelenideElement ratingContainer = reviewSection.$("p");
-        if (!ratingContainer.exists()) return Pair.of(null, null);
-
-        ElementsCollection ratingSpans = ratingContainer.$$("span");
-        if (ratingSpans.size() < 2) return Pair.of(null, null);
-
-        String scoreText = ratingSpans.get(0).getText().replace(",", ".");
-        Float score = parseFloatSafely(scoreText);
-
-        String scoreType = ratingSpans.get(1).getText().trim();
-
-        return Pair.of(score, scoreType);
-    }
+//    private Pair<Float, String> extractReviewInfo(SelenideElement hotel) {
+//        SelenideElement reviewSection = hotel.$("div[data-element-name='property-card-review']");
+//        if (!reviewSection.exists()) return Pair.of(null, null);
+//
+//        SelenideElement ratingContainer = reviewSection.$("p");
+//        if (!ratingContainer.exists()) return Pair.of(null, null);
+//
+//        ElementsCollection ratingSpans = ratingContainer.$$("span");
+//        if (ratingSpans.size() < 2) return Pair.of(null, null);
+//
+//        String scoreText = ratingSpans.get(0).getText().replace(",", ".");
+//        Float score = parseFloatSafely(scoreText);
+//
+//        String scoreType = ratingSpans.get(1).getText().trim();
+//
+//        return Pair.of(score, scoreType);
+//    }
 
     private float parseRating(String text) {
         Matcher matcher = RATING_PATTERN.matcher(text);
