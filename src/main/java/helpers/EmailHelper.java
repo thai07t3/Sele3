@@ -24,6 +24,44 @@ public class EmailHelper {
      * @return OTP code nếu tìm thấy, ngược lại trả về null.
      * @throws Exception
      */
+//    public String fetchOtpFromEmail(String subjectKeyword) throws Exception {
+//        // Thiết lập properties cho session
+//        Properties props = new Properties();
+//        props.setProperty("mail.store.protocol", protocol);
+//        Session session = Session.getInstance(props, null);
+//
+//        // Kết nối đến email server
+//        Store store = session.getStore(protocol);
+//        store.connect(host, username, password);
+//
+//        // Mở folder INBOX để đọc email
+//        Folder inbox = store.getFolder("INBOX");
+//        inbox.open(Folder.READ_ONLY);
+//
+//        Message[] messages = inbox.getMessages();
+//        String otpCode = null;
+//        // Duyệt ngược (lấy email mới nhất trước)
+//        for (int i = messages.length - 1; i >= 0; i--) {
+//            Message message = messages[i];
+//            String subject = message.getSubject();
+//            if (subject != null && subject.contains(subjectKeyword)) {
+//                // Lấy nội dung email dưới dạng text
+//                String content = getTextFromMessage(message);
+//                // Ví dụ mẫu: "Hi, your Agoda OTP is 868574. It's valid for 10 minutes."
+//                Pattern pattern = Pattern.compile("Agoda OTP is (\\d{6})");
+//                Matcher matcher = pattern.matcher(content);
+//                if (matcher.find()) {
+//                    otpCode = matcher.group(1);
+//                    break;
+//                }
+//            }
+//        }
+//
+//        inbox.close(false);
+//        store.close();
+//        return otpCode;
+//    }
+
     public String fetchOtpFromEmail(String subjectKeyword) throws Exception {
         // Thiết lập properties cho session
         Properties props = new Properties();
@@ -40,18 +78,22 @@ public class EmailHelper {
 
         Message[] messages = inbox.getMessages();
         String otpCode = null;
-        // Duyệt ngược (lấy email mới nhất trước)
+        // Duyệt qua các email (mới nhất ở cuối mảng)
         for (int i = messages.length - 1; i >= 0; i--) {
             Message message = messages[i];
             String subject = message.getSubject();
             if (subject != null && subject.contains(subjectKeyword)) {
                 // Lấy nội dung email dưới dạng text
                 String content = getTextFromMessage(message);
-                // Ví dụ mẫu: "Hi, your Agoda OTP is 868574. It's valid for 10 minutes."
+                // Sử dụng regex để tìm tất cả các OTP có định dạng: "Agoda OTP is <6 chữ số>"
                 Pattern pattern = Pattern.compile("Agoda OTP is (\\d{6})");
                 Matcher matcher = pattern.matcher(content);
-                if (matcher.find()) {
-                    otpCode = matcher.group(1);
+                String lastOtp = null;
+                while (matcher.find()) {
+                    lastOtp = matcher.group(1); // Cập nhật mã OTP mỗi khi tìm thấy match mới
+                }
+                if (lastOtp != null) {
+                    otpCode = lastOtp; // Lấy mã OTP cuối cùng trong nội dung email
                     break;
                 }
             }

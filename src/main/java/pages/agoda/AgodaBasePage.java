@@ -1,6 +1,7 @@
 package pages.agoda;
 
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.attributeMatching;
@@ -11,6 +12,8 @@ import static utils.PageUtils.waitForAjaxComplete;
 
 public class AgodaBasePage {
     protected final SelenideElement inputSearch = $("[data-selenium='textInput']");
+    protected final SelenideElement userMenu = $("[data-element-name='user-menu']");
+    protected final SelenideElement savedProperty = $("[data-element-name='favorite-menu']");
 
     protected void waitForInitialLoad() {
         $("body").shouldNotHave(cssClass("loading"), DEFAULT_TIMEOUT);
@@ -33,5 +36,15 @@ public class AgodaBasePage {
     protected void waitForResultsStabilization() {
         $("body").shouldNotHave(attributeMatching("class", ".*loading.*"), DEFAULT_TIMEOUT);
         waitForAjaxComplete();
+    }
+
+    @Step("Click on user menu")
+    public void clickOnUserMenu() {
+        userMenu.click();
+    }
+
+    @Step("Click on saved property")
+    public void clickOnSavedProperty() {
+        savedProperty.click();
     }
 }

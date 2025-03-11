@@ -5,16 +5,15 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import helpers.EmailHelper;
 import io.qameta.allure.Step;
-import utils.PageUtils;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$x;
+import static com.codeborne.selenide.Selenide.*;
 
 public class SignInPage extends AgodaBasePage {
+    private final SelenideElement iframe = $("[data-cy='ul-app-frame']");
     private final SelenideElement loginPopup = $("[data-cy='mutation-sensor']");
     private final SelenideElement signinTitle = $x("//h2[text()='Sign in or create an account']");
     private final SelenideElement emailInput = $("[data-cy='unified-email-input']");
-    private final SelenideElement continueButton = $x("//div[span[text()='Continue']]");
+    private final SelenideElement continueButton = $x("//button[div[span[text()='Continue']]]");
     private final SelenideElement signInOption = $x("//p[text()='Other ways to sign in']");
     private final SelenideElement usePasswordButton = $("[data-cy='unified-auth-otp-use-password-button']");
     private final SelenideElement signInButton = $("[data-cy='signin-button']");
@@ -23,20 +22,32 @@ public class SignInPage extends AgodaBasePage {
 
     @Step("Should login popup be visible")
     public void shouldLoginPopupBeVisible() {
-        PageUtils.waitForPageFullyLoaded();
-        waitForResultsStabilization();
+        switchTo().frame(iframe);
+        Selenide.sleep(5000);
         signinTitle.shouldHave(Condition.exist);
+        switchTo().defaultContent();
     }
 
     @Step("Enter email")
     public void enterEmail(String email) {
+        switchTo().frame(iframe);
         emailInput.click();
         emailInput.val(email);
+        switchTo().defaultContent();
+    }
+
+    @Step("Enter OTP")
+    public void enterOTP(String otp) {
+        switchTo().frame(iframe);
+        firstOTP.val(otp);
+        switchTo().defaultContent();
     }
 
     @Step("Click continue button")
     public void clickContinueButton() {
+        switchTo().frame(iframe);
         continueButton.click();
+        switchTo().defaultContent();
     }
 
     @Step("Use password")
@@ -59,6 +70,7 @@ public class SignInPage extends AgodaBasePage {
                 "vkid txmb mlkx mcgc");
         enterEmail(email);
         clickContinueButton();
+        Selenide.sleep(10000); //Wait for OTP email
         try {
             otp = emailHelper.fetchOtpFromEmail("Email OTP");
             if (otp != null) {
@@ -70,10 +82,9 @@ public class SignInPage extends AgodaBasePage {
             e.printStackTrace();
         }
 //        String otp = emailHelper.fetchOtpFromEmail("Email OTP");
-        Selenide.sleep(15000); //Wait for OTP email
-        firstOTP.val(otp);
+         //Wait for OTP email
+        enterOTP(otp);
         clickContinueButton();
     }
-
 
 }

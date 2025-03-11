@@ -36,7 +36,6 @@ public class TC01 extends BaseTest {
         agodaHomePage.setLanguageIfNot(language);
     }
 
-
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
         Selenide.closeWebDriver();

@@ -15,4 +15,8 @@ public class RoomInfo {
     private Float rating;
     private Float score;
     private String scoreType;
+
+    public String getPriceAsString() {
+        return String.format("%,d", price);
+    }
 }

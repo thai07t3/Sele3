@@ -148,6 +148,7 @@ public class AgodaResultPage extends AgodaBasePage {
         PageUtils.waitForPageFullyLoaded();
         verifyHotelListLoaded();
         $$("[data-selenium='hotel-name']").first().scrollIntoView("{behavior: 'instant', block: 'center'}").click();
+        Selenide.sleep(5000);
     }
 
     @Step("Get first hotel information")

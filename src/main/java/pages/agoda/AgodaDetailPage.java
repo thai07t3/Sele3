@@ -2,6 +2,7 @@ package pages.agoda;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import enums.agoda.PropertyType;
 import io.qameta.allure.Step;
@@ -10,7 +11,7 @@ import utils.PageUtils;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.*;
 
-public class AgodaDetailPage {
+public class AgodaDetailPage extends AgodaBasePage{
     private final SelenideElement hotelName = $("[data-selenium='hotel-header-name']");
     private final SelenideElement hotelAddress = $("[data-selenium='hotel-address-map']");
     private final ElementsCollection gridFilters = $$("[data-selenium='RoomGridFilter-filter']");
@@ -46,7 +47,8 @@ public class AgodaDetailPage {
 
     @Step("Add hotel to favorite")
     public void addHotelToFavorite() {
-        PageUtils.waitForPageFullyLoaded();
+        Selenide.sleep(3000);
         favoriteButton.click();
+        Selenide.sleep(3000);
     }
 }
