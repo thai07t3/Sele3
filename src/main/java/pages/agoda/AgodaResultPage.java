@@ -1,6 +1,5 @@
 package pages.agoda;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
@@ -17,8 +16,8 @@ import org.testng.Assert;
 import utils.PageUtils;
 import utils.SortUtils;
 
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -37,8 +36,8 @@ public class AgodaResultPage extends AgodaBasePage {
     private final SelenideElement adults = $("[data-selenium='adultValue']");
     private final SelenideElement children = $("[data-selenium='childValue']");
     private final ElementsCollection filterOptions = $$("[data-selenium='filter-item-text']");
-    private final String dynamicFilterOption = "//span[text()='%s']//following-sibling::*[local-name()='svg']";
-    //    private final String dynamicFilterOption = "label[.//span[text()='%s']]//*[local-name()='svg'";
+//    private final String dynamicFilterOption = "//span[text()='%s']//following-sibling::*[local-name()='svg']";
+    private final String dynamicFilterOption = "//div[span[text()='%s']]";
     private final SelenideElement minPriceBox = $("#price_box_0");
     private final SelenideElement maxPriceBox = $("#price_box_1");
     private final ElementsCollection infoHeaders = $$("[data-element-name='property-info-header']");
@@ -71,27 +70,27 @@ public class AgodaResultPage extends AgodaBasePage {
 
     @Step("Click on the recommended")
     public void clickRecommended() {
-        $("[data-selenium='search-sort-recommended']").click();
+        $("[data-selenium='search-sort-recommended']").scrollIntoView("{behavior: 'instant', block: 'center'}").click();
     }
 
     @Step("Click on the sort lowest price")
     public void clickSortLowestPrice() {
-        $("[data-element-name='search-sort-price']").click();
+        $("[data-element-name='search-sort-price']").scrollIntoView("{behavior: 'instant', block: 'center'}").click();
     }
 
     @Step("Click on the sort distance")
     public void clickSortDistance() {
-        $("[data-element-name='search-sort-distance-landmark']").click();
+        $("[data-element-name='search-sort-distance-landmark']").scrollIntoView("{behavior: 'instant', block: 'center'}").click();
     }
 
     @Step("Click on the sort rating")
     public void clickSortRating() {
-        $("[data-element-name='search-sort-guest-rating']").click();
+        $("[data-element-name='search-sort-guest-rating']").scrollIntoView("{behavior: 'instant', block: 'center'}").click();
     }
 
     @Step("Click on the sort hot deal")
     public void clickSortHotDeal() {
-        $("[data-element-name='search-sort-secret-deals']").click();
+        $("[data-element-name='search-sort-secret-deals']").scrollIntoView("{behavior: 'instant', block: 'center'}").click();
     }
 
     @Step("Get searched text")
@@ -112,7 +111,7 @@ public class AgodaResultPage extends AgodaBasePage {
         waitForInitialLoad();
         applySorting(sortType);
         waitForResultsStabilization();
-//        verifyHotelListLoaded();
+        verifyHotelListLoaded();
     }
 
     @Step("Enter min price")
@@ -130,16 +129,31 @@ public class AgodaResultPage extends AgodaBasePage {
         enterMinPrice(minPrice);
         enterMaxPrice(maxPrice);
         Selenide.actions().sendKeys(Keys.ENTER).perform();
+        PageUtils.waitForPageFullyLoaded();
         verifyHotelListLoaded();
     }
 
-    private void applyPropertyFilter(PropertyType propertyType) {
+    @Step("Apply filter")
+    public void applyPropertyFilter(PropertyType propertyType) {
         filterOptions.findBy(text(propertyType.getValue()))
                 .scrollIntoView("{behavior: 'instant', block: 'center'}")
                 .shouldBe(visible, DEFAULT_TIMEOUT)
                 .click();
 
         verifyHotelListLoaded();
+    }
+
+    @Step("Select the first hotel")
+    public void selectFirstHotel() {
+        PageUtils.waitForPageFullyLoaded();
+        verifyHotelListLoaded();
+        $$("[data-selenium='hotel-name']").first().scrollIntoView("{behavior: 'instant', block: 'center'}").click();
+    }
+
+    @Step("Get first hotel information")
+    public RoomInfo getFirstHotel() {
+        List<RoomInfo> rooms = getFirstHotels(1);
+        return rooms.isEmpty() ? null : rooms.get(0);
     }
 
     @Step("Apply filters")
@@ -151,12 +165,12 @@ public class AgodaResultPage extends AgodaBasePage {
 
     @Step("Apply filter for rating")
     public void applyFilter(RatingType ratingType) {
+        verifyRatingListLoaded();
         $$x(dynamicFilterOption.formatted(ratingType.getValue())).first()
                 .scrollIntoView("{behavior: 'instant', block: 'center'}")
                 .shouldBe(visible, DEFAULT_TIMEOUT)
                 .click();
-
-        verifyHotelListLoaded();
+        PageUtils.waitForPageFullyLoaded();
     }
 
     @Step("Apply filters for rating")
@@ -179,6 +193,7 @@ public class AgodaResultPage extends AgodaBasePage {
 
     @Step("Get first {number} hotels")
     public List<RoomInfo> getFirstHotels(int number) {
+        verifyHotelListLoaded();
         return $$("li[data-hotelid]")
                 .shouldHave(sizeGreaterThanOrEqual(number), DEFAULT_TIMEOUT)
                 .first(number)
@@ -189,6 +204,7 @@ public class AgodaResultPage extends AgodaBasePage {
 
     @Step("Should destination be correct")
     public void shouldDestinationBeCorrect(int number, String destination) {
+        String regexDestination = "(?i).*" + destination.replace(" ", "\\s*") + ".*";
         verifyHotelListLoaded();
         ElementsCollection address = $$("button[data-selenium='area-city-text']");
         // Scroll to the last address element to ensure all elements are loaded
@@ -199,7 +215,7 @@ public class AgodaResultPage extends AgodaBasePage {
             address = $$("button[data-selenium='area-city-text']");
         }
         for (int i = 0; i < number; i++) {
-            address.get(i).scrollIntoView(true).shouldHave(text(destination));
+            address.get(i).scrollIntoView(true).shouldHave(matchText(regexDestination));
         }
     }
 
@@ -222,10 +238,15 @@ public class AgodaResultPage extends AgodaBasePage {
                 .trim();
     }
 
+//    private String extractAddress(SelenideElement hotel) {
+//        return Arrays.stream(hotel.$("[data-selenium='area-city-text'] span")
+//                .getText()
+//                .trim();
+//    }
+
     private String extractAddress(SelenideElement hotel) {
-        return hotel.$("[data-selenium='area-city-text'] span")
-                .getText()
-                .trim();
+        String fullText = hotel.$("[data-selenium='area-city-text'] span").getText().trim();
+        return fullText.split(" -")[0].trim();
     }
 
     private boolean checkAvailability(SelenideElement hotel) {
@@ -255,6 +276,8 @@ public class AgodaResultPage extends AgodaBasePage {
 
     private Pair<Float, String> extractReviewInfo(SelenideElement hotel) {
         SelenideElement reviewSection = hotel.$("[data-element-name='property-card-review']");
+        if (!reviewSection.exists()) return Pair.of(null, null);
+
         ElementsCollection ratingSpans = reviewSection.$("p").$$("span");
 
         return Pair.of(

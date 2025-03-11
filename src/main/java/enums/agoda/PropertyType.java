@@ -5,7 +5,9 @@ import lombok.Getter;
 @Getter
 public enum PropertyType {
     HOTEL("Hotel"),
-    MOTEL("Motel"),;
+    MOTEL("Motel"),
+    BREAKFAST_INCLUDED("Breakfast included"),
+    SWIMMING_POOL("Swimming pool"),;
 
     private final String value;
 

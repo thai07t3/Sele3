@@ -1,9 +1,11 @@
 package pages.agoda;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import models.agoda.Travel;
 import utils.Constants;
+import utils.PageUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -12,12 +14,23 @@ import java.util.function.IntSupplier;
 
 import static com.codeborne.selenide.Condition.clickable;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
+import static utils.Constants.DEFAULT_TIMEOUT;
 
 public class AgodaHomePage extends AgodaBasePage {
+    private final SelenideElement loginButton = $("[data-element-name='sign-in-button']");
+    private final SelenideElement registerButton = $("data-element-name='sign-up-button'");
     private final SelenideElement selectedLanguage = $("[data-selenium='language-container-selected-language']");
     private final String dynamicDateLocator = "[data-selenium-date='%s']";
     private final SelenideElement occupancyBox = $("[data-element-name='occupancy-box']");
     private final SelenideElement searchButton = $("[data-selenium='searchButton']");
+
+    @Step("Click login button")
+    public void clickLoginButton() {
+        loginButton.click();
+        PageUtils.waitForPageFullyLoaded();
+        $("[class='whiteLabelLogo']").shouldHave(Condition.disappear, DEFAULT_TIMEOUT);
+    }
 
     @Step("Get selected language")
     public String getSelectedLanguage() {
@@ -45,7 +58,7 @@ public class AgodaHomePage extends AgodaBasePage {
     @Step("Select search information")
     public void selectSearchInformation(String searchInfo) {
         fillSearchInformation(searchInfo);
-        $("[data-text='" + searchInfo + "']").click();
+        $$("[data-selenium='autosuggest-item']").first().click();
     }
 
     @Step("Select date")
@@ -125,8 +138,8 @@ public class AgodaHomePage extends AgodaBasePage {
                 selectSearchInformation(travel.getDestination());
             }
             if (Objects.nonNull(travel.getStartDate()) && Objects.nonNull(travel.getEndDate())) {
-//                System.out.println("Start date: " + travel.getStartDate());
-//                System.out.println("End date: " + travel.getEndDate());
+                System.out.println("Start date: " + travel.getStartDate());
+                System.out.println("End date: " + travel.getEndDate());
                 selectDateRange(travel.getStartDate(), travel.getEndDate());
             }
             if (Objects.nonNull(travel.getNumberOfRooms())) {

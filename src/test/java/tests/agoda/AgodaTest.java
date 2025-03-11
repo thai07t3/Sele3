@@ -7,10 +7,12 @@ import enums.agoda.RatingType;
 import enums.agoda.SortType;
 import models.agoda.RoomInfo;
 import models.agoda.Travel;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.agoda.AgodaHomePage;
 import pages.agoda.AgodaResultPage;
+import pages.agoda.SignInPage;
 import tests.BaseTest;
 import utils.DateUtils;
 
@@ -20,6 +22,7 @@ import java.util.List;
 import static com.codeborne.selenide.Selenide.open;
 
 public class AgodaTest extends BaseTest {
+    private final SignInPage signInPage = new SignInPage();
     private final AgodaHomePage agodaHomePage = new AgodaHomePage();
     private final LocalDate expectedDate = DateUtils.getNext("friday");
     private final AgodaResultPage agodaResultPage = new AgodaResultPage();
@@ -35,6 +38,12 @@ public class AgodaTest extends BaseTest {
     public void setUp() {
         open(Configuration.baseUrl);
         agodaHomePage.setLanguageIfNot(language);
+    }
+
+
+    @AfterMethod(alwaysRun = true)
+    public void tearDown() {
+        Selenide.closeWebDriver();
     }
 
     @Test(description = "Search and sort", groups = {"smoke", "regression"})
@@ -67,5 +76,29 @@ public class AgodaTest extends BaseTest {
             System.out.println("Score type: " + room.getScoreType());
             System.out.println("------------------------------------");
         }
+    }
+
+    @Test(description = "Favorit", groups = {"smoke", "regression"})
+    public void TC_03() {
+        agodaHomePage.clickLoginButton();
+        signInPage.login("thai07t3@gmail.com");
+        System.out.println("Login successfully");
+//        agodaHomePage.fillTravelInformation(travel);
+//        agodaHomePage.clickSearchButton();
+//        Selenide.switchTo().window(1); // Switch to the new tab
+//        agodaResultPage.shouldDestinationBeCorrect(5, travel.getDestination());
+//        agodaResultPage.enterMinAndMaxPrice(500000, 1000000);
+//        agodaResultPage.applyFilter(RatingType.THREE_STAR);
+//        List<RoomInfo> roomInfos = agodaResultPage.getFirstHotels(5);
+//        for (RoomInfo room : roomInfos) {
+//            System.out.println("Name: " + room.getName());
+//            System.out.println("Address: " + room.getAddress());
+//            System.out.println("Is available: " + room.getIsAvailable());
+//            System.out.println("Price: " + room.getPrice());
+//            System.out.println("Rating: " + room.getRating());
+//            System.out.println("Score: " + room.getScore());
+//            System.out.println("Score type: " + room.getScoreType());
+//            System.out.println("------------------------------------");
+//        }
     }
 }

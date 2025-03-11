@@ -21,6 +21,10 @@ public class AgodaBasePage {
         $$("li[data-hotelid]").shouldHave(sizeGreaterThan(0), DEFAULT_TIMEOUT);
     }
 
+    protected void verifyRatingListLoaded() {
+        $$("[data-element-name='search-filter-starratingwithluxury']").shouldHave(sizeGreaterThan(0), DEFAULT_TIMEOUT);
+    }
+
     protected void clickAndVerify(Runnable action) {
         action.run();
         waitForResultsStabilization();
